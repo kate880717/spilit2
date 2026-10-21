@@ -1,0 +1,3454 @@
+<!DOCTYPE html>
+<!--
+  © 2026 GEG 화성(깊이 e끌림). All rights reserved.
+  본 저작물은 「저작권법」에 따라 보호받으며, 저작권자의 허락 없는 복제·배포·수정을 금합니다.
+  문의: bacusiki777@gmail.com, for2102@jimj.kr
+  BUILD: GEGHS-DEEPE-2026
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>모으기와 가르기 — 모음이와 나눔이</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --intro-bg-1:#FFF6D6;--intro-bg-2:#FFE9A8;--intro-accent:#FFC23C;--intro-text:#6B4A00;
+  --gather-bg-1:#E8F8E0;--gather-bg-2:#C6EBA7;--gather-accent:#5BB836;--gather-deep:#2F7A12;
+  --split-bg-1:#FFE8F1;--split-bg-2:#FFC1D9;--split-accent:#FF6FA8;--split-deep:#C73874;
+  --merge-bg-1:#DCEEFF;--merge-bg-2:#A8D2FF;--merge-accent:#3A8DDE;
+  --card-bg:#fff;--card-shadow:0 8px 20px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.06);
+  --radius:22px;--radius-sm:14px;
+  --font-display:'Jua',system-ui,sans-serif;
+  --font-body:'Nanum Gothic',system-ui,sans-serif;
+  --correct:#2EBD6B;--wrong:#F25C5C;--highlight:#FFE600;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font-body);font-weight:700;user-select:none}
+body{background:linear-gradient(180deg,#FFF8DD,#FFE9A8);color:#333}
+#app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:1280px;height:800px;transform-origin:center center;overflow:hidden}
+.topbar{position:absolute;top:0;left:0;right:0;height:64px;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-bottom:3px solid rgba(0,0,0,.06);display:flex;align-items:center;padding:0 20px;z-index:100;gap:16px}
+.topbar .home-btn{width:44px;height:44px;border-radius:12px;background:var(--intro-accent);border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.topbar .home-btn:hover{transform:scale(1.08)}
+.topbar .title{font-family:var(--font-display);font-size:22px;color:#333;flex:1}
+.topbar .progress{height:40px;width:220px;background:#E5E7EB;border-radius:20px;overflow:hidden;position:relative}
+.topbar .progress-fill{height:100%;background:linear-gradient(90deg,#5BB836,#2F7A12);border-radius:20px;width:0%;transition:width .5s}
+.topbar .progress-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:18px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.topbar .toggle-btn{width:44px;height:44px;border-radius:12px;border:2px solid #E5E7EB;background:#fff;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.topbar .toggle-btn:hover{transform:scale(1.08)}
+.topbar .toggle-btn.active{background:var(--intro-accent);border-color:var(--intro-accent)}
+.screen{position:absolute;top:64px;left:0;right:0;bottom:0;opacity:0;pointer-events:none;transition:opacity .4s;display:flex;flex-direction:column;overflow:hidden}
+.screen.active{opacity:1;pointer-events:auto}
+.theme-intro{background:radial-gradient(ellipse at 20% 30%,rgba(255,255,255,.6) 0%,transparent 50%),radial-gradient(ellipse at 80% 70%,rgba(255,194,60,.4) 0%,transparent 50%),linear-gradient(180deg,var(--intro-bg-1),var(--intro-bg-2))}
+.theme-gather{background:radial-gradient(ellipse at 15% 20%,rgba(255,255,255,.5) 0%,transparent 50%),radial-gradient(ellipse at 85% 80%,rgba(91,184,54,.3) 0%,transparent 50%),linear-gradient(180deg,var(--gather-bg-1),var(--gather-bg-2))}
+.theme-split{background:radial-gradient(ellipse at 15% 20%,rgba(255,255,255,.5) 0%,transparent 50%),radial-gradient(ellipse at 85% 80%,rgba(255,111,168,.3) 0%,transparent 50%),linear-gradient(180deg,var(--split-bg-1),var(--split-bg-2))}
+.theme-merge{background:radial-gradient(ellipse at 15% 20%,rgba(255,255,255,.5) 0%,transparent 50%),radial-gradient(ellipse at 85% 80%,rgba(58,141,222,.3) 0%,transparent 50%),linear-gradient(180deg,var(--merge-bg-1),var(--merge-bg-2))}
+.instruction{margin:18px auto 8px;padding:14px 28px;background:#fff;border-radius:999px;box-shadow:var(--card-shadow);font-family:var(--font-display);font-size:32px;color:#333;max-width:80%;text-align:center;animation:pop .6s cubic-bezier(.34,1.56,.64,1);position:relative;z-index:5}
+@keyframes pop{0%{transform:translateY(-30px) scale(.85);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+.instruction .emph{color:var(--gather-deep);font-size:38px}
+.theme-split .instruction .emph{color:var(--split-deep)}
+.theme-merge .instruction .emph{color:var(--merge-accent)}
+
+/* TTS 글자 단위 하이라이트 */
+.tts-char{display:inline-block;transition:all .1s}
+.tts-reading{box-shadow:0 0 0 4px var(--highlight),0 6px 18px rgba(255,200,0,.35);transition:box-shadow .2s}
+.tts-char.active{background:var(--highlight);color:#111;padding:0 2px;border-radius:6px;transform:scale(1.08)}
+
+/* 튜토리얼 (버튼 바로 근처) */
+.tutorial-hint{font-family:var(--font-display);font-size:20px;color:#555;background:#FFF8DD;padding:10px 26px;border-radius:999px;display:inline-block;margin-top:8px;animation:pop .5s;border:2px solid #FFE9A8;width:max-content;max-width:min(760px,92vw);word-break:keep-all;line-height:1.4;z-index:5;position:relative;white-space:normal;text-align:center}
+
+.big-btn{font-family:var(--font-display);font-size:30px;padding:16px 42px;border:none;border-radius:999px;background:linear-gradient(180deg,#FFC23C,#FF9C00);color:#fff;box-shadow:0 6px 0 #C77800,0 12px 24px rgba(0,0,0,.15);cursor:pointer;transition:all .12s;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.big-btn:hover{transform:translateY(-2px)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #C77800,0 4px 8px rgba(0,0,0,.1)}
+.big-btn.green{background:linear-gradient(180deg,#6DD840,#2F9F0E);box-shadow:0 6px 0 #1F6E08,0 12px 24px rgba(0,0,0,.15)}
+.big-btn.pink{background:linear-gradient(180deg,#FF87BA,#E04A88);box-shadow:0 6px 0 #9E2F5E,0 12px 24px rgba(0,0,0,.15)}
+.big-btn.blue{background:linear-gradient(180deg,#5BB0FF,#2274D6);box-shadow:0 6px 0 #15528F,0 12px 24px rgba(0,0,0,.15)}
+.big-btn.gray{background:linear-gradient(180deg,#C0C7D0,#94A3B8);box-shadow:0 6px 0 #4B5563,0 12px 24px rgba(0,0,0,.15)}
+.big-btn.small{font-size:22px;padding:12px 26px;box-shadow:0 4px 0 rgba(0,0,0,.2),0 6px 12px rgba(0,0,0,.1)}
+.big-btn:disabled{opacity:.4;cursor:not-allowed}
+.skip-btn{background:rgba(255,255,255,.7);border:2px solid rgba(0,0,0,.1);padding:10px 24px;border-radius:999px;font-family:var(--font-display);font-size:18px;color:#666;cursor:pointer}
+.skip-btn:hover{background:#fff}
+
+.mic-gate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:30px;text-align:center}
+.mic-gate .big-mic{font-size:120px;animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+.setup-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:30px}
+.setup-card{background:#fff;border-radius:var(--radius);padding:36px 60px;box-shadow:var(--card-shadow);max-width:760px;width:100%}
+.setup-card h2{font-family:var(--font-display);font-size:36px;color:var(--intro-text);margin-bottom:20px;text-align:center}
+.setup-row{margin:16px 0}
+.setup-row label{font-family:var(--font-display);font-size:24px;color:#444;display:block;margin-bottom:8px}
+.setup-row select{width:100%;padding:14px 18px;font-family:var(--font-display);font-size:24px;border:3px solid #FFC23C;border-radius:14px;background:#FFFEF0;cursor:pointer;outline:none}
+.choice-row{display:flex;gap:14px;justify-content:center;margin-top:10px}
+.choice-row button{flex:1;font-family:var(--font-display);font-size:28px;padding:18px 0;border:4px solid #DDD;border-radius:18px;background:#fff;cursor:pointer;transition:all .15s}
+.choice-row button:hover{border-color:var(--gather-accent);transform:translateY(-2px)}
+.choice-row button.selected{background:linear-gradient(180deg,#9CE970,var(--gather-accent));color:#fff;border-color:var(--gather-deep);box-shadow:0 4px 0 var(--gather-deep)}
+
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:30px}
+.app-title{font-family:var(--font-display);font-size:86px;color:var(--intro-text);text-align:center;line-height:1;text-shadow:4px 4px 0 rgba(255,255,255,.7);animation:bounce 1.2s cubic-bezier(.34,1.56,.64,1)}
+@keyframes bounce{0%{transform:translateY(-50px) scale(.7);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+.subtitle{font-family:var(--font-display);font-size:28px;color:#8a6800;opacity:.85}
+.mascots{display:flex;gap:80px;margin:8px 0}
+.mascot-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.mascot-name{font-family:var(--font-display);font-size:22px;padding:6px 18px;border-radius:999px;color:#fff}
+.mascot-name.m{background:var(--gather-deep)}
+.mascot-name.n{background:var(--split-deep)}
+
+/* 오늘의 목표 — 백워드 설계 */
+.goals-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:20px}
+.goals-title{font-family:var(--font-display);font-size:44px;color:var(--intro-text);background:#fff;padding:14px 50px;border-radius:999px;box-shadow:var(--card-shadow);display:flex;align-items:center;gap:12px}
+.goal-list{background:#FFFBE5;border:4px dashed var(--intro-accent);border-radius:var(--radius);padding:24px 36px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--card-shadow);max-width:840px}
+.goal-item{font-family:var(--font-display);font-size:28px;color:#4a3500;display:flex;align-items:center;gap:14px;opacity:0;animation:goal-in .6s forwards}
+.goal-item:nth-child(1){animation-delay:.2s}.goal-item:nth-child(2){animation-delay:.5s}.goal-item:nth-child(3){animation-delay:.8s}
+@keyframes goal-in{0%{transform:translateX(-30px);opacity:0}100%{transform:translateX(0);opacity:1}}
+.goal-icon{width:44px;height:44px;background:var(--intro-accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+
+/* 탐구질문 팝업 */
+.inquiry-modal{position:absolute;inset:64px 0 0 0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:300;animation:fade-in .3s}
+@keyframes fade-in{0%{opacity:0}100%{opacity:1}}
+.inquiry-card{background:#fff;border-radius:var(--radius);padding:30px 40px;max-width:680px;box-shadow:0 16px 40px rgba(0,0,0,.3);animation:pop .5s cubic-bezier(.34,1.56,.64,1);text-align:center}
+.inquiry-card .icon{font-size:60px}
+.inquiry-card h2{font-family:var(--font-display);font-size:32px;color:var(--intro-text);margin:8px 0}
+.inquiry-card .answer-box{background:#FFFBE5;border:3px dashed var(--intro-accent);border-radius:16px;padding:16px;font-family:var(--font-display);font-size:22px;color:#4a3500;margin:14px 0;line-height:1.5;text-align:left}
+
+/* 녹음 — 단순화 */
+.record-wrap{flex:1;display:flex;flex-direction:column;align-items:center;padding:14px 20px;gap:14px;overflow-y:auto;position:relative}
+.record-wrap.post-followup-mode{padding-bottom:40px !important}
+.record-wrap.post-followup-mode .mascot-corner,.record-wrap.post-followup-mode .speech,.record-wrap.post-followup-mode .record-bottom,.record-wrap.post-followup-mode .record-meaning{display:none}
+.record-meaning{background:#fff;border-radius:var(--radius);padding:12px 30px;box-shadow:var(--card-shadow);font-family:var(--font-display);font-size:24px;text-align:center;max-width:780px}
+.record-meaning.pre{border:4px solid #93C5FD;color:#1E40AF}
+.record-meaning.post{border:4px solid #6EE7B7;color:#065F46}
+.record-meaning .small{font-size:20px;color:#666;display:block;margin-top:2px}
+.record-center{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px}
+.record-btn-huge{width:180px;height:180px;border-radius:50%;background:linear-gradient(180deg,#FF6464,#D03030);border:8px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.25),0 0 0 8px rgba(255,100,100,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.record-btn-huge:hover{transform:scale(1.05)}
+.record-btn-huge.recording{animation:pulse-rec 1.2s infinite}
+.record-btn-huge .dot-big{width:70px;height:70px;background:#fff;border-radius:50%;transition:all .2s}
+.record-btn-huge.recording .dot-big{width:50px;height:50px;border-radius:10px}
+.stt-display{background:#fff;border-radius:18px;padding:14px 24px;border:3px solid #E5E7EB;max-width:780px;width:90%;box-shadow:var(--card-shadow);min-height:80px}
+.stt-label{font-family:var(--font-display);font-size:20px;color:#666;margin-bottom:6px}
+.type-box{width:90%;max-width:780px;display:flex;flex-direction:column;gap:6px}
+.type-box label{font-family:var(--font-display);font-size:20px;color:#6B4A00}
+.type-box textarea{width:100%;font-family:var(--font-body);font-weight:700;font-size:24px;line-height:1.45;padding:12px 16px;border:3px solid #FFC23C;border-radius:16px;background:#fff;color:#222;resize:none;outline:none;user-select:text}
+.type-box textarea:focus{border-color:#E8A800;box-shadow:0 0 0 4px rgba(255,194,60,.3)}
+.post-followup-mode .type-box,.post-followup-mode .type-open{display:none !important}
+.type-open{font-family:var(--font-display);font-size:20px;color:#6B4A00;background:#fff;border:3px dashed #FFC23C;border-radius:999px;padding:8px 22px;cursor:pointer}
+.record-wrap.typing .mascot-corner,.record-wrap.typing > .speech{display:none}
+.stt-text{font-family:var(--font-body);font-size:26px;color:#222;line-height:1.5;min-height:32px}
+.record-bottom{display:flex;gap:14px;margin-top:auto;align-items:center}
+
+/* 빛 폭발 */
+.burst-effect{position:fixed;border-radius:50%;pointer-events:none;z-index:1000;background:radial-gradient(circle,rgba(255,230,0,.9) 0%,rgba(255,180,0,.4) 40%,transparent 70%);animation:burst-pop .7s ease-out forwards}
+@keyframes burst-pop{0%{transform:translate(-50%,-50%) scale(0);opacity:1}50%{transform:translate(-50%,-50%) scale(1.5);opacity:1}100%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+@keyframes pulse-rec{0%,100%{box-shadow:0 10px 30px rgba(0,0,0,.25),0 0 0 8px rgba(255,100,100,.3)}50%{box-shadow:0 10px 30px rgba(0,0,0,.25),0 0 0 22px rgba(255,100,100,.5)}}
+
+/* 마스코트 반응 */
+.mascot-jumping{animation:mascot-jump .6s ease-out}
+@keyframes mascot-jump{0%,100%{transform:translateY(0)}30%{transform:translateY(-30px) rotate(-8deg)}60%{transform:translateY(-15px) rotate(5deg)}}
+
+/* 객체 떨림 (모으기 준비 신호) */
+.shake-prepare{animation:shake-prepare .35s ease-in-out}
+@keyframes shake-prepare{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* 키패드 — 화면 하단 고정 */
+.keypad{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(12,1fr);gap:8px;padding:14px 16px;background:#fff;border-top:3px solid rgba(0,0,0,.1);box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:50;min-height:96px}
+.keypad .key{padding:14px 0;font-family:var(--font-display);font-size:32px;background:#fff;border:3px solid #DDD;border-radius:14px;cursor:pointer;color:#333;box-shadow:0 4px 0 #BBB;transition:all .12s;user-select:none;-webkit-tap-highlight-color:transparent}
+.keypad .key:hover{background:#F9FAFB;transform:translateY(-1px)}
+.keypad .key:active{transform:translateY(3px);box-shadow:0 1px 0 #BBB}
+.keypad .key.del{background:#FEE2E2;color:#DC2626;border-color:#FCA5A5;box-shadow:0 4px 0 #DC2626;font-size:28px}
+.keypad .key.check{background:linear-gradient(180deg,#5BB0FF,#2274D6);color:#fff;border-color:#15528F;font-size:22px;box-shadow:0 4px 0 #15528F}
+.keypad .key.check:disabled{background:#D1D5DB;color:#9CA3AF;border-color:#9CA3AF;box-shadow:0 4px 0 #9CA3AF;cursor:not-allowed}
+
+/* 키패드 있을 때 — 마스코트·말풍선 키패드 위로 */
+.activity.has-keypad{padding-bottom:130px}
+.activity.has-keypad .mascot-corner{bottom:130px;width:100px}
+.activity.has-keypad .speech{bottom:230px;font-size:19px;max-width:300px;word-break:keep-all;line-height:1.5;padding:10px 16px}
+
+/* 답 입력 박스 — 점선 박스 + 깜박이는 커서 */
+.num-tile.target.empty.input-active{border-style:dashed;border-color:#5BB0FF;background:#F0F7FF;color:#5BB0FF;animation:input-pulse 1.5s ease-in-out infinite}
+@keyframes input-pulse{0%,100%{box-shadow:0 0 0 0 rgba(91,176,255,.5)}50%{box-shadow:0 0 0 8px rgba(91,176,255,0)}}
+.num-tile.input-active::after{content:'';display:none}
+.cursor-blink{display:inline-block;width:5px;height:60px;background:#5BB0FF;animation:cursor-blink 0.9s infinite;vertical-align:middle;border-radius:2px}
+@keyframes cursor-blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+/* 활동 영역 패딩 — 키패드 공간 확보 */
+.activity.has-keypad{padding-bottom:120px}
+
+/* 카운팅 팝업 — 1,2,3... 세는 시각화 */
+.count-popup{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);background:#fff;border-radius:28px;padding:24px 36px;z-index:1500;box-shadow:0 24px 60px rgba(0,0,0,.3);min-width:380px;max-width:90vw;border:6px solid #FFC23C;animation:popup-in .5s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.count-popup.split-pop{border-color:#FF6FA8}
+@keyframes popup-in{to{transform:translate(-50%,-50%) scale(1)}}
+.count-popup .pop-title{font-family:var(--font-display);font-size:24px;color:#666;text-align:center;margin-bottom:8px}
+.count-popup .pop-items{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0;padding:14px;background:#FFFEF0;border-radius:14px;min-height:60px}
+.count-popup.split-pop .pop-items{background:#FFF5FA}
+.count-popup .pop-item{position:relative;display:inline-block;transition:all .2s}
+.count-popup .pop-item.counting{transform:scale(1.35);filter:drop-shadow(0 0 12px #FFE600)}
+.count-popup .pop-item.counted{filter:drop-shadow(0 0 4px rgba(255,194,60,.5))}
+.count-popup .num-tag{position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-family:var(--font-display);font-size:22px;color:#fff;background:#FFC23C;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);opacity:0;transition:opacity .2s}
+.count-popup.split-pop .num-tag{background:#FF6FA8}
+.count-popup .pop-item.counting .num-tag,.count-popup .pop-item.counted .num-tag{opacity:1}
+.count-popup .big-num{font-family:var(--font-display);font-size:88px;color:var(--gather-deep);text-align:center;opacity:0;transform:scale(.3);transition:all .5s cubic-bezier(0.34,1.56,0.64,1);line-height:1;margin-top:6px}
+.count-popup.split-pop .big-num{color:var(--split-deep)}
+.count-popup .big-num.show{opacity:1;transform:scale(1)}
+.count-popup .big-num .unit{font-size:42px;color:#777}
+.count-popup .two-plates{display:flex;gap:24px;justify-content:center;align-items:flex-start}
+.count-popup .plate{flex:1;text-align:center}
+.count-popup .plate .pop-items{justify-content:center}
+
+/* 자기평가 + 스티커 */
+.self-eval{background:#fff;border-radius:var(--radius);padding:14px 30px;box-shadow:var(--card-shadow);text-align:center;animation:pop .5s;margin-top:6px}
+.self-eval h3{font-family:var(--font-display);font-size:24px;color:#444;margin-bottom:8px}
+.star-row{display:flex;gap:8px;justify-content:center;font-size:50px;margin:4px 0}
+.star{cursor:pointer;color:#DDD;transition:all .2s;filter:grayscale(1)}
+.star.filled{color:#FFC23C;filter:grayscale(0);transform:scale(1.1);animation:star-pop .3s}
+@keyframes star-pop{0%{transform:scale(.8) rotate(-20deg)}100%{transform:scale(1.1) rotate(0)}}
+.sticker-box{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--card-shadow);text-align:center}
+.sticker-box h3{font-family:var(--font-display);font-size:24px;color:#444;margin-bottom:10px}
+.sticker-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.sticker-btn{font-size:48px;cursor:pointer;padding:8px;background:#F9FAFB;border:4px solid #E5E7EB;border-radius:14px;transition:all .2s}
+.sticker-btn:hover{transform:scale(1.1) rotate(-5deg);background:#FEF3C7}
+.sticker-btn.picked{background:#FEF3C7;border-color:#F59E0B;animation:wiggle .4s}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg) scale(1.15)}75%{transform:rotate(10deg) scale(1.15)}}
+
+/* 활동 영역 */
+.activity{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 30px 20px;gap:12px;overflow:hidden}
+.activity-canvas{flex:1;width:100%;display:flex;align-items:center;justify-content:center;position:relative;gap:24px}.num-tile{width:110px;height:110px;border-radius:var(--radius-sm);background:linear-gradient(180deg,#F2D7A8,#D9A86A);border:4px solid #B5854A;box-shadow:0 4px 0 #8C5F2D,0 8px 16px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:60px;color:#4A2C0E;transition:all .18s}
+.num-tile.empty{background:#FFFCEF;border:4px dashed #C0A475;box-shadow:none;color:transparent}
+.num-tile.target{background:linear-gradient(180deg,#FFEC9E,#FFC23C);border-color:#B58200;font-size:68px}
+.num-tile.correct-fill{animation:tile-correct .5s ease-out}
+@keyframes tile-correct{0%{transform:scale(.5);background:linear-gradient(180deg,#9CE970,var(--correct))}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.num-tile.shake,.branch-tree .slot.shake,.opt-card.shake{animation:shake-x .4s}
+@keyframes shake-x{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.objects-box{background:#fff;border:5px solid var(--gather-deep);border-radius:var(--radius);padding:18px;min-width:240px;min-height:160px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;box-shadow:var(--card-shadow);position:relative}
+.theme-split .objects-box{border-color:var(--split-deep)}
+.objects-box .obj{animation:obj-pop .4s cubic-bezier(.34,1.56,.64,1) backwards}
+@keyframes obj-pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.choices{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.choice-btn{min-width:100px;padding:18px 26px;background:#fff;border:4px solid #DDD;border-radius:var(--radius-sm);font-family:var(--font-display);font-size:44px;color:#333;cursor:pointer;box-shadow:0 4px 0 #BBB,0 8px 16px rgba(0,0,0,.1);transition:all .15s}
+.choice-btn:hover{transform:translateY(-3px);border-color:var(--gather-accent)}
+.choice-btn:active{transform:translateY(2px)}
+.choice-btn.correct{background:linear-gradient(180deg,#9CE970,var(--correct));border-color:var(--correct);color:#fff;animation:tile-correct .5s}
+.choice-btn.wrong{background:#FFD3D3;border-color:var(--wrong);color:var(--wrong);animation:shake-x .4s}
+
+/* 분지 트리 */
+.branch-tree{position:relative;display:flex;flex-direction:column;align-items:center;gap:30px;padding:10px}
+.branch-tree .tree-svg{position:absolute;inset:0;pointer-events:none;z-index:1}
+.branch-tree .row{display:flex;gap:100px;z-index:2;position:relative}
+.branch-tree .slot,.branch-tree .anchor{width:110px;height:110px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:60px}
+.branch-tree .anchor{background:linear-gradient(180deg,#FFEC9E,#FFC23C);border:4px solid #B58200;box-shadow:0 4px 0 #8C5F2D,0 8px 16px rgba(0,0,0,.15);color:#4A2C0E}
+.branch-tree .slot.empty{background:#FFFCEF;border:4px dashed #C0A475;color:#C0A475;cursor:pointer;transition:all .18s}
+.branch-tree .slot.empty:hover{background:#FFF3D8;transform:scale(1.04)}
+.branch-tree .slot.empty.active{border-color:var(--highlight);background:#FFFEE6;box-shadow:0 0 0 6px rgba(255,230,0,.4);animation:slot-pulse 1.2s infinite}
+@keyframes slot-pulse{0%,100%{box-shadow:0 0 0 6px rgba(255,230,0,.4)}50%{box-shadow:0 0 0 14px rgba(255,230,0,.2)}}
+.branch-tree .slot.filled{background:linear-gradient(180deg,#FFEC9E,#FFC23C);border:4px solid #B58200;color:#4A2C0E;box-shadow:0 4px 0 #8C5F2D,0 8px 16px rgba(0,0,0,.15);animation:tile-correct .5s}
+.option-panel{display:flex;flex-wrap:wrap;gap:12px;padding:16px;background:rgba(255,255,255,.6);border-radius:var(--radius);border:3px dashed rgba(0,0,0,.1);max-width:330px;justify-content:center}
+.option-panel .opt-card{width:80px;height:80px;border-radius:var(--radius-sm);background:linear-gradient(180deg,#F2D7A8,#D9A86A);border:4px solid #B5854A;box-shadow:0 4px 0 #8C5F2D,0 6px 14px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:46px;color:#4A2C0E;cursor:pointer;transition:all .15s;user-select:none}
+.option-panel .opt-card:hover{transform:translateY(-4px) scale(1.05)}
+.option-panel .opt-card.active{border-color:var(--highlight);background:linear-gradient(180deg,#FFEC9E,#FFC23C);box-shadow:0 0 0 5px rgba(255,230,0,.5),0 4px 0 #8C5F2D;transform:translateY(-6px) scale(1.08)}
+.option-panel .opt-card.used{visibility:hidden}
+
+/* 마스코트·말풍선 자리 확보 — 모든 화면 콘텐츠는 하단 180px 비워둠 */
+.mic-gate,.setup-wrap,.goals-wrap,.record-wrap,.cert-wrap{padding-bottom:60px !important}
+
+.mascot-corner{position:absolute;bottom:18px;left:22px;width:130px;z-index:10;pointer-events:none;animation:bob 3s ease-in-out infinite}
+.mascot-corner.right{left:auto;right:22px}
+.speech{position:absolute;bottom:120px;left:160px;background:#fff;border:3px solid #333;border-radius:20px;padding:12px 20px;font-family:var(--font-display);font-size:21px;box-shadow:var(--card-shadow);max-width:320px;z-index:11;line-height:1.55;word-break:keep-all;overflow-wrap:break-word;text-align:left}
+.speech::before{content:'';position:absolute;bottom:16px;left:-14px;border:9px solid transparent;border-right-color:#333}
+.speech::after{content:'';position:absolute;bottom:17px;left:-10px;border:8px solid transparent;border-right-color:#fff}
+
+.feedback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:200}
+.feedback-card{background:#fff;border-radius:var(--radius);padding:22px 38px;box-shadow:0 16px 40px rgba(0,0,0,.2);font-family:var(--font-display);font-size:32px;text-align:center;border:6px solid var(--correct);color:var(--correct);opacity:0;transform:scale(.5)}
+.feedback-card.wrong{border-color:var(--wrong);color:var(--wrong)}
+.feedback.show .feedback-card{animation:fb-pop .5s forwards}
+@keyframes fb-pop{0%{opacity:0;transform:scale(.3) rotate(-10deg)}60%{opacity:1;transform:scale(1.15) rotate(3deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+
+.confetti{position:absolute;inset:0;pointer-events:none;z-index:150;overflow:hidden}
+.confetti-piece{position:absolute;width:14px;height:14px;animation:confetti-fall 1.6s ease-out forwards}
+@keyframes confetti-fall{0%{transform:translateY(-20vh) rotate(0deg);opacity:1}100%{transform:translateY(90vh) rotate(720deg);opacity:0}}
+
+.cert-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:14px}
+.cert-card{width:920px;background:radial-gradient(circle at 20% 30%,rgba(255,194,60,.25),transparent 60%),radial-gradient(circle at 80% 70%,rgba(255,111,168,.25),transparent 60%),linear-gradient(180deg,#FFFEF0,#FFF6D6);border:10px double var(--intro-accent);border-radius:28px;box-shadow:0 16px 40px rgba(0,0,0,.18);padding:20px 28px;animation:cert-in 1s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cert-in{0%{transform:translateY(40px) rotate(-2deg);opacity:0}100%{transform:translateY(0) rotate(0);opacity:1}}
+.cert-card h1{font-family:var(--font-display);font-size:42px;color:var(--intro-text);text-align:center;text-shadow:3px 3px 0 rgba(255,255,255,.7)}
+.cert-name{font-family:var(--font-display);font-size:28px;color:var(--gather-deep);background:#fff;padding:6px 24px;border-radius:999px;border:3px dashed var(--gather-accent);margin:4px auto;display:inline-block}
+.cert-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:10px 0}
+.cert-box{background:#fff;border-radius:14px;padding:12px 16px;min-height:100px}
+.cert-box.pre{border:4px solid #93C5FD}
+.cert-box.post{border:4px solid #6EE7B7}
+.cert-box h3{font-family:var(--font-display);font-size:20px;margin-bottom:4px}
+.cert-box.pre h3{color:#1E40AF}
+.cert-box.post h3{color:#065F46}
+.cert-box p{font-family:var(--font-body);font-size:18px;color:#333;line-height:1.4}
+
+/* 대시보드 */
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:8px 0;border-top:2px dashed #FFC23C;margin-top:6px}
+.dash-card{background:#fff;border-radius:14px;padding:10px;text-align:center;border:2px solid #F0E6C8}
+.dash-card .num{font-family:var(--font-display);font-size:30px;color:var(--gather-deep)}
+.dash-card .label{font-family:var(--font-display);font-size:14px;color:#666}
+.cert-buttons{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.hidden{display:none !important}
+
+/* 선잇기 카드 */
+.conn-card{width:80px;height:64px;background:#fff;border:3px solid var(--gather-deep);border-radius:14px;font-family:var(--font-display);font-size:32px;color:var(--gather-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.1);transition:all .2s;font-weight:bold}
+.conn-card:hover{transform:translateY(-2px) scale(1.04)}
+.conn-card.sel{background:#FFE066;border-color:#E8B100;box-shadow:0 0 18px rgba(255,193,60,.7);transform:scale(1.08)}
+.conn-card.matched{cursor:default;opacity:.85;transform:none}
+.conn-card.matched:hover{transform:none}
+/* 식 고르기 카드 — 인라인 스타일과 일관 */
+.eq-card.selected{transform:translateY(-3px) scale(1.03)}
+
+
+/* 수학 용어 강조 — 색깔별 가독성 */
+.answer-box .t-num,.intro-content .t-num,.activity .t-num{color:#1565C0;background:rgba(25,118,210,.13);padding:2px 9px;border-radius:8px;font-weight:bold;display:inline-block;margin:0 2px}
+.answer-box .t-op,.intro-content .t-op,.activity .t-op{color:#C62828;background:rgba(198,40,40,.13);padding:2px 9px;border-radius:8px;font-weight:bold;display:inline-block;margin:0 2px}
+.answer-box .t-rel,.intro-content .t-rel,.activity .t-rel{color:#2E7D32;background:rgba(46,125,50,.13);padding:2px 9px;border-radius:8px;font-weight:bold;display:inline-block;margin:0 2px}
+.answer-box{line-height:2.2 !important}
+
+
+/* 게임 요소 — 마스코트 옷 + 도감 + 콤보 */
+.mascot-with-cap{position:relative;display:inline-block}
+.grad-cap-svg{position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:90px;height:34px;z-index:5}
+.ribbon-svg{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:70px;height:18px;z-index:5}
+.cert-collection{margin:18px 0;padding:14px;background:rgba(255,243,200,.5);border-radius:16px;border:2px dashed #E8B100}
+.collection-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:6px}
+.coll-item{min-width:70px}
+.coll-item.on{box-shadow:0 4px 10px rgba(232,177,0,.4);transform:scale(1.04)}
+@keyframes bounce{0%{transform:translateY(0)}100%{transform:translateY(-12px)}}
+
+
+/* 한국어 단어 단위 줄바꿈 — 전체 텍스트 영역 */
+.speech, .tutorial-hint, .instruction, .intro-card, .answer-box, .modal-content, .cert-content,
+.feedback-msg, .speech-bubble, .info-text { word-break: keep-all; overflow-wrap: break-word; }
+/* 마스코트 영역이 다른 콘텐츠 가리지 않게 */
+.activity { padding-bottom: 120px; }
+.activity.has-keypad { padding-bottom: 230px; }
+/* 모달/결과 화면 z-index 일관성 */
+.modal-overlay, .count-popup, .arena { z-index: 200 !important; }
+.combo-popup { z-index: 1000 !important; }
+
+
+/* 한국어 줄바꿈 전역 — 단어 단위, 어색한 글자 단위 끊김 방지 */
+body, .activity, .activity *, .modal-content, .modal-content *, .intro-card, .intro-card *,
+.goal-card, .goal-card *, .cert-wrap, .cert-wrap *, .record-wrap, .record-wrap *,
+.dashboard, .dashboard *, .sidebar, .sidebar * { word-break: keep-all; overflow-wrap: break-word; }
+/* 숫자/식 카드는 예외 (긴 식이 들어가지 않음) */
+.num-tile, .opt-card, .anchor, .slot, .eq-card, .conn-card, .key, .kp-btn { word-break: normal !important; }
+/* 인스트럭션 박스 padding 여유 — 길어도 잘리지 않게 */
+.instruction { line-height: 1.5; word-break: keep-all; overflow-wrap: break-word; padding: 12px 24px; }
+
+
+/* 수료증 등 wrap 영역 — viewport 초과 시 자동 스크롤 안전망 */
+.cert-wrap{max-height:calc(100vh - 60px);overflow-y:auto;overflow-x:hidden}
+/* 수료증 콘텐츠 컴팩트화 */
+.cert-wrap{padding-top:12px !important;padding-bottom:40px !important}
+.cert-wrap h2,.cert-wrap h3{margin:6px 0 !important}
+.cert-wrap .stat-card,.cert-wrap .inquiry-box{padding:8px 12px !important}
+.cert-wrap .collection-card{padding:8px 12px !important}
+.cert-wrap .cert-buttons{margin-top:12px !important;gap:10px !important;flex-wrap:wrap;justify-content:center}
+.cert-wrap .cert-buttons button{padding:12px 22px !important;font-size:17px !important}
+
+</style>
+<script>
+/* 다른 주소(깃허브 등)에서 열려도 막히지 않는 통로 */
+window.__gasJsonp = function (url, timeoutMs) {
+  return new Promise(function (resolve) {
+    if (!url) { resolve(null); return; }
+    var cb = '__adCb' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    var s = document.createElement('script');
+    var done = false;
+    function cleanup() {
+      try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+      if (s.parentNode) s.parentNode.removeChild(s);
+    }
+    window[cb] = function (d) { if (done) return; done = true; cleanup(); resolve(d); };
+    s.onerror = function () { if (done) return; done = true; cleanup(); resolve(null); };
+    setTimeout(function () { if (done) return; done = true; cleanup(); resolve(null); }, timeoutMs || 12000);
+    s.src = url + (url.indexOf('?') < 0 ? '?' : '&') + 'callback=' + cb;
+    document.body.appendChild(s);
+  });
+};
+</script>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <div class="topbar">
+      <button class="home-btn" onclick="goBack()" title="이전으로">←</button>
+      <button class="home-btn" onclick="goHome()" title="처음으로">🏠</button>
+      <div class="title">모으기와 가르기</div>
+      <div class="progress"><div class="progress-fill" id="progress-fill"></div><div class="progress-label" id="progress-label">준비</div></div>
+      <button class="toggle-btn" id="speaker-btn" onclick="toggleSpeaker()" title="소리 켜기/끄기">🔇</button>
+    </div>
+    <div id="screens"></div>
+    <div class="feedback" id="feedback"><div class="feedback-card" id="feedback-card">잘했어요!</div></div>
+    <div class="confetti hidden" id="confetti"></div>
+    <div id="inquiry-mount"></div>
+  </div>
+</div>
+
+<script>
+const APP_PREFIX = 'app1';
+// ============================================
+// ⚙️ 0. GAS_URL — Apps Script 웹앱 주소 (배포 후 입력)
+// ============================================
+/* ===== BYOB: 서버 주소 감지 (학생 링크 #c= / 저장된 주소 / 체험 모드) ===== */
+const APP_ID = '모으기와가르기';
+const isStudentMode = /[#&]c=/.test(location.hash);
+function readServerUrl(){
+  try {
+    var m=(location.hash||'').match(/[#&]c=([^&]+)/);
+    if(m){ var u=decodeURIComponent(m[1]); localStorage.setItem('appServerUrl', u); return u; }
+    return localStorage.getItem('appServerUrl') || '';
+  } catch(e){ return ''; }
+}
+let GAS_URL = readServerUrl();
+
+const FALLBACK_STUDENTS = Array.from({length:30},(_,i)=>({no:i+1,name:'학생'+(i+1),clazz:''}));
+const FALLBACK_QUESTIONS = [
+  // ── 가르기 집중 (모으기 단계 전체 제외) · 구글 시트 code.gs의 defaultQuestions('app1')과 같은 문제 ──
+  // [1] 똑같이 가르기
+  {stage:'split-equal',kind:'bear',a:0,b:0,target:6,meta:''},
+  {stage:'split-equal',kind:'apple',a:0,b:0,target:4,meta:''},
+  // [2] ★ 가르기 짝꿍 한 수 찾기 — 합 5, 6, 7 각 2문제
+  {stage:'split-find-pair',kind:'',a:2,b:0,target:5,meta:''},
+  {stage:'split-find-pair',kind:'',a:3,b:0,target:5,meta:''},
+  {stage:'split-find-pair',kind:'',a:2,b:0,target:6,meta:''},
+  {stage:'split-find-pair',kind:'',a:4,b:0,target:6,meta:''},
+  {stage:'split-find-pair',kind:'',a:3,b:0,target:7,meta:''},
+  {stage:'split-find-pair',kind:'',a:5,b:0,target:7,meta:''},
+  // [3] 수 카드 가르기 (시각화 + 키패드)
+  {stage:'split-card',kind:'',a:2,b:0,target:7,meta:''},
+  // [4] 분지 트리 — 여러 가지 방법으로 가르기
+  {stage:'split-many',kind:'',a:0,b:0,target:7,meta:''},
+  // [5] 🎯 차근차근 도전
+  {stage:'speed-round',kind:'',a:0,b:0,target:1,meta:''},
+];
+
+const APP_STATE = {
+  speakerOn:false,micPermitted:false,micStream:null,
+  students:[],questions:[],
+  learnerName:'',learnerClass:'',chosenCount:15,
+  preRecord:{text:'',audioBase64:null,helpCount:0,redoCount:0},
+  postRecord:{text:'',audioBase64:null,helpCount:0,redoCount:0,stars:0,stickers:[]},
+  correct:0,total:0,
+  currentScreen:'mic',activityIdx:0,activityQueue:[],
+};
+
+/* ===== 체험 모드 안내 배너 (setupScale가 높이 반영 → 버튼과 안 겹침) ===== */
+function showDemoBannerIfNeeded(){
+  if(GAS_URL || document.getElementById('__demoBar')) return;
+  var bar=document.createElement('div'); bar.id='__demoBar';
+  bar.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:2147483000;background:#1f2937;color:#fff;font-size:13px;line-height:1.45;padding:10px 38px calc(10px + env(safe-area-inset-bottom)) 14px;text-align:center;font-family:var(--font-display,sans-serif);box-shadow:0 -2px 10px rgba(0,0,0,0.25);';
+  bar.innerHTML='체험 모드예요 · 활동 기록은 이 기기에만 저장돼요(이어하기 가능). 선생님이 구글 시트를 연결하면 시트에 저장됩니다.';
+  var x=document.createElement('button'); x.textContent='\u2715';
+  x.style.cssText='position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#fff;font-size:16px;cursor:pointer;';
+  x.onclick=function(){ removeDemoBanner(); };
+  bar.appendChild(x); document.body.appendChild(bar);
+  window.dispatchEvent(new Event('resize'));
+}
+function removeDemoBanner(){ var b=document.getElementById('__demoBar'); if(b) b.remove(); window.dispatchEvent(new Event('resize')); }
+function _initDemoBanner(){ try{ showDemoBannerIfNeeded(); }catch(e){} }
+if(document.readyState==='loading'){ window.addEventListener('DOMContentLoaded', _initDemoBanner); } else { _initDemoBanner(); }
+window.addEventListener('load', _initDemoBanner);
+
+/* ===== ⚙️ 선생님 설정(시트 연결 + 학생용 주소) ===== */
+function ensureSettingsModal(){
+  if(document.getElementById('__cfgModal')) return;
+  var m=document.createElement('div'); m.id='__cfgModal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:2147483600;padding:16px;';
+  m.innerHTML='<div style="background:#fff;border-radius:20px;padding:24px;max-width:480px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,0.3);font-family:var(--font-display,sans-serif);text-align:left">'
+    +'<h3 style="font-size:22px;font-weight:800;color:#16a34a;margin:0 0 10px">\u2699\ufe0f 선생님 설정</h3>'
+    +'<p style="font-size:14px;color:#475569;margin:0 0 10px;line-height:1.5">구글 시트 웹앱 주소(/exec)를 붙여넣고 연결하면, 학생 활동이 시트에 저장돼요.</p>'
+    +'<input id="__cfgInput" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;padding:11px;font-size:14px;border:2px solid #86efac;border-radius:11px;margin-bottom:12px;box-sizing:border-box"/>'
+    +'<div style="display:flex;gap:8px;margin-bottom:12px">'
+    +'<button onclick="connectServer()" style="flex:1;background:#16a34a;color:#fff;border:none;border-radius:11px;padding:11px;font-size:16px;font-weight:700;cursor:pointer">연결하기</button>'
+    +'<button onclick="disconnectServer()" style="background:#f1f5f9;color:#475569;border:none;border-radius:11px;padding:11px 16px;font-size:16px;font-weight:700;cursor:pointer">연결 해제</button></div>'
+    +'<div id="__cfgLinkBox" style="display:none;background:#f0fdf4;border:2px solid #bbf7d0;border-radius:11px;padding:12px;margin-bottom:10px">'
+    +'<div style="font-size:13px;color:#16a34a;font-weight:700;margin-bottom:6px">학생용 주소 (학생에게 주세요)</div>'
+    +'<div id="__cfgLink" style="font-size:12px;color:#475569;word-break:break-all;margin-bottom:8px"></div>'
+    +'<button onclick="copyStuLink()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer">주소 복사</button></div>'
+    +'<button onclick="closeSettings()" style="width:100%;background:none;border:none;color:#94a3b8;font-size:15px;cursor:pointer;margin-top:4px">닫기</button></div>';
+  m.addEventListener('click',function(e){ if(e.target===m) closeSettings(); });
+  document.body.appendChild(m);
+}
+function openSettings(){ ensureSettingsModal(); var i=document.getElementById('__cfgInput'); if(i) i.value=GAS_URL||''; document.getElementById('__cfgModal').style.display='flex'; renderStuLink(); }
+function closeSettings(){ var m=document.getElementById('__cfgModal'); if(m) m.style.display='none'; }
+function renderStuLink(){
+  var box=document.getElementById('__cfgLinkBox'), lk=document.getElementById('__cfgLink'); if(!box) return;
+  if(GAS_URL){ lk.textContent=location.origin+location.pathname+'#c='+encodeURIComponent(GAS_URL); box.style.display='block'; }
+  else box.style.display='none';
+}
+async function connectServer(){
+  var i=document.getElementById('__cfgInput'); var u=(i?i.value:'').trim();
+  if(!u){ alert('서버 주소를 입력해 주세요'); return; }
+  GAS_URL=u; localStorage.setItem('appServerUrl', u);
+  removeDemoBanner();
+  try{ await bootstrapData(); }catch(e){}
+  renderStuLink();
+  if(APP_STATE.currentScreen==='setup') showScreen('setup', false);
+  alert('연결되었어요! 학생용 주소가 만들어졌어요.');
+}
+function copyStuLink(){ var lk=document.getElementById('__cfgLink'); if(!lk||!lk.textContent) return; try{ navigator.clipboard.writeText(lk.textContent); }catch(e){} alert('학생용 주소를 복사했어요!'); }
+function disconnectServer(){
+  GAS_URL=''; localStorage.removeItem('appServerUrl');
+  var i=document.getElementById('__cfgInput'); if(i) i.value=''; renderStuLink();
+  showDemoBannerIfNeeded();
+  bootstrapData().then(function(){ if(APP_STATE.currentScreen==='setup') showScreen('setup',false); });
+  alert('연결을 해제했어요 (체험 모드)');
+}
+
+/* ===== 체험 모드 이어하기(로컬 저장) ===== */
+function saveProgress(){
+  if(GAS_URL || !APP_STATE.learnerName) return;
+  try{ localStorage.setItem('progress:'+APP_ID+':'+APP_STATE.learnerName, JSON.stringify({
+    learnerClass:APP_STATE.learnerClass, chosenCount:APP_STATE.chosenCount,
+    activityQueue:APP_STATE.activityQueue, activityIdx:APP_STATE.activityIdx,
+    correct:APP_STATE.correct, total:APP_STATE.total, preRecord:APP_STATE.preRecord, ts:Date.now()
+  })); }catch(e){}
+}
+function restoreProgress(name){
+  try{
+    var raw=localStorage.getItem('progress:'+APP_ID+':'+name); if(!raw) return false;
+    var d=JSON.parse(raw); if(!d.activityQueue||!d.activityQueue.length) return false;
+    APP_STATE.chosenCount=d.chosenCount||15; APP_STATE.activityQueue=d.activityQueue;
+    APP_STATE.activityIdx=d.activityIdx||0; APP_STATE.correct=d.correct||0; APP_STATE.total=d.total||0;
+    if(d.preRecord) APP_STATE.preRecord=d.preRecord;
+    return true;
+  }catch(e){ return false; }
+}
+function clearProgress(){ try{ if(APP_STATE.learnerName) localStorage.removeItem('progress:'+APP_ID+':'+APP_STATE.learnerName); }catch(e){} }
+function checkResumeButton(val){
+  var btn=document.getElementById('__resumeBtn'); if(!btn) return;
+  if(GAS_URL || !val){ btn.style.display='none'; return; }
+  var name=(val.split('|')[0])||'';
+  try{ btn.style.display = localStorage.getItem('progress:'+APP_ID+':'+name) ? 'inline-block':'none'; }
+  catch(e){ btn.style.display='none'; }
+}
+function resumeFromSetup(){
+  var sel=document.getElementById('student-select'); if(!sel||!sel.value){ alert('이름을 먼저 골라요'); return; }
+  var parts=sel.value.split('|'); var name=parts[0], clazz=parts[1]||'';
+  if(restoreProgress(name)){ APP_STATE.learnerName=name; APP_STATE.learnerClass=clazz; showScreen('activity'); }
+  else alert('이어서 할 기록이 없어요');
+}
+
+window.addEventListener('load', async () => {
+  setupScale();
+  window.addEventListener('resize', setupScale);
+  primeVoices();
+  window.__DATA_READY = bootstrapData();   // 명단은 뒤에서 받아 오고 첫 화면은 바로 띄운다
+  showScreen('mic');
+});
+
+// 반응형 scale (잘림·스크롤 X)
+function setupScale(){
+  const stage=document.getElementById('stage');
+  const w=window.innerWidth,h=window.innerHeight;
+  const bar=document.getElementById('__demoBar');
+  const reserve=bar?bar.offsetHeight:0;
+  stage.style.transform=`scale(${Math.min(w/1280,(h-2*reserve)/800)})`;
+}
+
+async function bootstrapData(){
+  if(GAS_URL){
+    try{
+      // 막히지 않는 통로로 먼저 요청하고, 안 되면 예전 방식으로 재시도합니다.
+      let d = await window.__gasJsonp(GAS_URL+'?action=bootstrap&app='+APP_PREFIX);
+      if(!d){ const r=await fetch(GAS_URL+'?action=bootstrap&app='+APP_PREFIX); d=await r.json(); }
+      if(d.ok){
+        APP_STATE.students=d.students.length?d.students:FALLBACK_STUDENTS;
+        APP_STATE.questions=d.questions.length?d.questions:FALLBACK_QUESTIONS;
+        return;
+      }
+    }catch(e){console.warn('GAS 로드 실패',e);}
+  }
+  APP_STATE.students=FALLBACK_STUDENTS;
+  APP_STATE.questions=FALLBACK_QUESTIONS;
+}
+
+// ============================================
+// 🔊 1. TTS — 끊기지 않게 차례로 읽어 주기
+// ============================================
+// 말하기 방식
+//  - 기본(interrupt): 지금 나오는 말을 멈추고 새 말을 한다. 단, '잘했어요' 같은
+//    지켜야 할 말(protect)이 나오는 중이면 그 말이 끝난 뒤에 한다.
+//  - queue: 지금 말이 끝난 뒤 차례로 한다.
+//  - protect: 끊기면 안 되는 말. 다음 화면으로 넘어가기 전에 끝까지 기다린다.
+// 모든 speak()는 말이 끝나면(또는 막혔을 때 시간 제한이 지나면) resolve 된다.
+let CACHED_VOICE=null;
+const TTS_KEEP=new Set();          // 크롬에서 말 객체가 지워져 onend가 안 오는 문제 방지
+const TTS_QUEUE=[];
+let TTS_CUR=null;                  // {text,opts,resolve,mode,utt,timer}
+let TTS_WARMED=false;
+
+function primeVoices(){
+  if(!('speechSynthesis' in window))return;
+  selectBestVoice();
+  try{speechSynthesis.addEventListener('voiceschanged',selectBestVoice);}catch(e){}
+}
+function selectBestVoice(){
+  if(!('speechSynthesis' in window))return;
+  const voices=speechSynthesis.getVoices();
+  if(!voices.length)return;
+  // 원래 앱과 같은 순서로 고른다
+  // 1순위: Google 한국어 클라우드 (가장 자연스러운 여자 목소리)
+  let v=voices.find(x=>x.lang==='ko-KR' && x.name.toLowerCase().includes('google') && !x.localService);
+  // 2순위: Wavenet/Neural2
+  if(!v) v=voices.find(x=>x.lang==='ko-KR' && /wavenet|neural|ko-kr-wavenet|ko-kr-neural/i.test(x.name));
+  // 3순위: 자연스러움 키워드
+  if(!v) v=voices.find(x=>x.lang==='ko-KR' && /wavenet|neural|premium|enhanced|natural/i.test(x.name));
+  // 4순위: 아무 한국어 음성
+  if(!v) v=voices.find(x=>x.lang==='ko-KR');
+  CACHED_VOICE=v||null;
+}
+
+// 읽을 글 다듬기: 이모지·기호를 빼서 "빛나는 별" 같은 엉뚱한 소리를 막는다
+function ttsClean(text){
+  return String(text||'')
+    .replace(/<[^>]+>/g,'')
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu,'')
+    .replace(/[▶◀✓✔★☆→←—–]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function ttsEstimateMs(text,rate){
+  // 한국어 음성은 대략 한 글자 0.2초. 넉넉하게 잡고 네트워크 지연 1.8초를 더한다.
+  return Math.round(([...text].length*220)/(rate||1))+1800;
+}
+
+function ttsFinish(item){
+  if(!item||item.done)return;
+  item.done=true;
+  if(item.timer)clearTimeout(item.timer);
+  if(item.utt)TTS_KEEP.delete(item.utt);
+  try{item.opts.onend&&item.opts.onend();}catch(e){}
+  item.resolve();
+}
+
+function ttsDropQueue(){
+  while(TTS_QUEUE.length)ttsFinish(TTS_QUEUE.shift());
+}
+
+function ttsPlayNext(){
+  if(TTS_CUR)return;
+  const item=TTS_QUEUE.shift();
+  if(!item)return;
+  if(!APP_STATE.speakerOn){ttsFinish(item);ttsPlayNext();return;}
+  TTS_CUR=item;
+  const start=()=>{
+    if(item.done){if(TTS_CUR===item){TTS_CUR=null;ttsPlayNext();}return;}
+    const u=new SpeechSynthesisUtterance(item.text);
+    item.utt=u;TTS_KEEP.add(u);
+    u.lang='ko-KR';u.rate=item.opts.rate||0.95;u.pitch=item.opts.pitch||1.0;u.volume=item.opts.volume==null?1:item.opts.volume;
+    if(!CACHED_VOICE)selectBestVoice();
+    if(CACHED_VOICE)u.voice=CACHED_VOICE;
+    u.onstart=()=>{try{item.opts.onstart&&item.opts.onstart();}catch(e){}};
+    const end=(ev)=>{
+      if(item.done)return;
+      // 일시적으로 실패하면 같은 목소리로 한 번만 다시 (목소리는 바꾸지 않는다)
+      if(ev&&ev.type==='error'&&!item.retried&&/network|synthesis/i.test(ev.error||'')){
+        item.retried=true;TTS_KEEP.delete(u);
+        setTimeout(start,120);return;
+      }
+      ttsFinish(item);
+      if(TTS_CUR===item){TTS_CUR=null;ttsPlayNext();}
+    };
+    u.onend=end;u.onerror=end;
+    // onend가 끝내 오지 않는 브라우저 대비
+    if(item.timer)clearTimeout(item.timer);
+    item.timer=setTimeout(()=>{
+      if(item.done)return;
+      ttsFinish(item);
+      if(TTS_CUR===item){TTS_CUR=null;try{speechSynthesis.cancel();}catch(e){}ttsPlayNext();}
+    },ttsEstimateMs(item.text,u.rate));
+    try{if(speechSynthesis.paused)speechSynthesis.resume();}catch(e){}
+    speechSynthesis.speak(u);
+  };
+  // 방금 cancel 했다면 크롬이 새 말을 삼키지 않도록 아주 잠깐 쉬었다 말한다
+  if(item.afterCancel)setTimeout(start,60);else start();
+}
+
+function speak(text,opts){
+  opts=opts||{};
+  if(!APP_STATE.speakerOn||!('speechSynthesis' in window))return Promise.resolve();
+  const clean=ttsClean(text);
+  if(!clean)return Promise.resolve();
+  if(!CACHED_VOICE)selectBestVoice();
+  const mode=opts.mode||'interrupt';
+  return new Promise(resolve=>{
+    const item={text:clean,opts,mode,resolve,done:false};
+    const curProtected=TTS_CUR&&TTS_CUR.mode==='protect';
+    if(mode==='queue'){
+      TTS_QUEUE.push(item);
+    }else if(mode==='protect'){
+      if(curProtected){
+        // 지켜야 할 말끼리는 차례로
+        const idx=TTS_QUEUE.findIndex(q=>q.mode!=='protect');
+        if(idx<0)TTS_QUEUE.push(item);else TTS_QUEUE.splice(idx,0,item);
+      }else{
+        // 지금 나오는 보통 말은 멈추고, 줄 서 있던 말은 '잘했어요' 뒤로 미룬다
+        if(TTS_CUR){const c=TTS_CUR;TTS_CUR=null;ttsFinish(c);try{speechSynthesis.cancel();}catch(e){}item.afterCancel=true;}
+        TTS_QUEUE.unshift(item);
+      }
+    }else{ // interrupt
+      if(curProtected){
+        // 칭찬이 끝난 뒤에 새 화면 안내를 한다. 앞서 줄 선 보통 말은 버린다.
+        for(let i=TTS_QUEUE.length-1;i>=0;i--){
+          if(TTS_QUEUE[i].mode!=='protect'){ttsFinish(TTS_QUEUE[i]);TTS_QUEUE.splice(i,1);}
+        }
+        TTS_QUEUE.push(item);
+      }else{
+        ttsDropQueue();
+        if(TTS_CUR){const c=TTS_CUR;TTS_CUR=null;ttsFinish(c);try{speechSynthesis.cancel();}catch(e){}item.afterCancel=true;}
+        TTS_QUEUE.push(item);
+      }
+    }
+    ttsPlayNext();
+  });
+}
+
+// 지켜야 할 말(칭찬 등)과 그 뒤에 줄 선 말이 끝날 때까지 기다린다 (최대 maxMs)
+function waitSpeechDone(maxMs){
+  const pending=[];
+  if(TTS_CUR&&(TTS_CUR.mode==='protect'||TTS_CUR.mode==='queue'))pending.push(TTS_CUR);
+  TTS_QUEUE.forEach(q=>{if(q.mode==='protect'||q.mode==='queue')pending.push(q);});
+  if(!pending.length)return Promise.resolve();
+  const all=Promise.all(pending.map(p=>new Promise(r=>{
+    const prev=p.resolve;p.resolve=()=>{prev();r();};
+    if(p.done)r();
+  })));
+  return Promise.race([all,new Promise(r=>setTimeout(r,maxMs||4000))]);
+}
+
+function stopSpeech(){
+  ttsDropQueue();
+  if(TTS_CUR){const c=TTS_CUR;TTS_CUR=null;ttsFinish(c);}
+  try{speechSynthesis.cancel();}catch(e){}
+}
+
+// 소리를 켜는 순간(사용자가 누른 순간) 음성 엔진을 깨워 둔다
+function warmUpSpeech(){
+  if(TTS_WARMED||!('speechSynthesis' in window))return;
+  TTS_WARMED=true;
+  selectBestVoice();
+}
+
+// 셀 때: 숫자를 끝까지 읽고 다음으로 넘어간다
+const KO_NUMS=['','하나','둘','셋','넷','다섯','여섯','일곱','여덟','아홉','열',
+  '열하나','열둘','열셋','열넷','열다섯','열여섯','열일곱','열여덟','열아홉','스물'];
+function speakCount(n,minMs){
+  if(APP_STATE.currentScreen!=='activity')return sleep(minMs||380);
+  const word=KO_NUMS[n]||String(n);
+  return Promise.all([speak(word,{rate:1.05}),sleep(minMs||380)]);
+}
+
+// TTS 글자 단위 하이라이트 (boundary 부정확 → setInterval로 글자 흐름)
+async function speakWithHighlight(text,container){
+  if(!APP_STATE.speakerOn)return;
+  // 문제 식(화면 글)은 건드리지 않고, 읽는 동안 안내 상자만 살짝 빛나게 한다
+  await speak(text,{rate:0.95,
+    onstart:()=>{if(container)container.classList.add('tts-reading');},
+    onend:()=>{if(container)container.classList.remove('tts-reading');}});
+}
+
+function toggleSpeaker(){
+  APP_STATE.speakerOn=!APP_STATE.speakerOn;
+  const btn=document.getElementById('speaker-btn');
+  btn.textContent=APP_STATE.speakerOn?'🔊':'🔇';
+  btn.classList.toggle('active',APP_STATE.speakerOn);
+  if(APP_STATE.speakerOn){
+    warmUpSpeech();
+    speak('소리를 켰어요');   // 누른 순간 바로 말해서 음성 엔진을 미리 깨운다
+  }else stopSpeech();
+}
+
+// 숫자 뒤 조사 (한자어 읽기 기준: 일 이 삼 사 오 육 칠 팔 구 십)
+function _numBatchim(n){ // 0: 받침 없음, 1: 받침 있음, 2: ㄹ받침
+  n=Math.abs(+n)||0;
+  if(n===0)return 1;                       // 영
+  const ld=n%10;
+  if(ld===0){
+    if(n%10000===0)return 1;               // 만
+    if(n%1000===0)return 1;                // 천
+    if(n%100===0)return 1;                 // 백
+    return 1;                              // 십
+  }
+  if([2,4,5,9].includes(ld))return 0;
+  if([1,7,8].includes(ld))return 2;
+  return 1;
+}
+function josaIGa(n){return _numBatchim(n)===0?'가':'이';}
+function josaIrang(n){return _numBatchim(n)===0?'랑':'이랑';}
+function josaNameIGa(name){
+  const c=String(name||'').trim().slice(-1).charCodeAt(0);
+  if(c>=0xAC00&&c<=0xD7A3)return (c-0xAC00)%28===0?'가':'이';
+  return '이(가)';
+}
+function copulaYeyo(n){return _numBatchim(n)===0?'예요':'이에요';}
+
+// ============================================
+// 🎵 2. 효과음 (스피커 ON일 때만)
+// ============================================
+let AUDIO_CTX=null;
+function getAudio(){if(!AUDIO_CTX)AUDIO_CTX=new(window.AudioContext||window.webkitAudioContext)();return AUDIO_CTX;}
+function playTone(freq,dur,type='sine',vol=0.3){
+  if(!APP_STATE.speakerOn)return;
+  try{
+    const ctx=getAudio();const osc=ctx.createOscillator();const gain=ctx.createGain();
+    osc.type=type;osc.frequency.value=freq;osc.connect(gain);gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(vol,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    osc.start();osc.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+function sfxCorrect(){playTone(660,0.12,'sine',0.3);setTimeout(()=>playTone(880,0.18,'sine',0.3),120);}
+function sfxWrong(){playTone(220,0.25,'sine',0.25);}
+function sfxCheer(){playTone(523,0.10);setTimeout(()=>playTone(659,0.10),100);setTimeout(()=>playTone(784,0.20),200);}
+
+// ============================================
+// 🎊 3. 폭죽
+// ============================================
+function launchConfetti(count=40){
+  const box=document.getElementById('confetti');
+  box.classList.remove('hidden');box.innerHTML='';
+  const colors=['#FFC23C','#FF6FA8','#5BB836','#3A8DDE','#FFE600','#9B59B6'];
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    p.style.left=(Math.random()*100)+'%';p.style.background=colors[i%colors.length];
+    p.style.animationDelay=(Math.random()*0.4)+'s';
+    p.style.transform=`rotate(${Math.random()*360}deg)`;
+    box.appendChild(p);
+  }
+  setTimeout(()=>{box.classList.add('hidden');box.innerHTML='';},2200);
+}
+
+// ============================================
+// 🎤 4. 마이크 허가 (앱 시작 시 1번만)
+// ============================================
+async function requestMicOnce(){
+  if(APP_STATE.micPermitted)return true;
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    APP_STATE.micStream=s; APP_STATE.micPermitted=true;
+    return true;
+  }catch(e){console.warn('마이크 거부:',e);return false;}
+}
+
+// ============================================
+// 📺 5. 화면 라우팅 (히스토리 + 뒤로가기)
+// ============================================
+const SCREEN_HISTORY = [];
+function showScreen(id, addToHistory=true){
+  // 앞 화면에서 돌던 세기 팝업·별·날아가는 그림 정리
+  document.querySelectorAll('.count-popup,.combo-popup,.burst-effect,.anim-temp').forEach(e=>e.remove());
+  const _im=document.getElementById('inquiry-mount'); if(_im)_im.innerHTML='';
+  const _fb=document.getElementById('feedback'); if(_fb)_fb.classList.remove('show');
+  if(addToHistory && APP_STATE.currentScreen && APP_STATE.currentScreen!==id){
+    SCREEN_HISTORY.push(APP_STATE.currentScreen);
+  }
+  APP_STATE.currentScreen=id;
+  const root=document.getElementById('screens');
+  root.innerHTML='';
+  const screen=document.createElement('div');
+  screen.id='screen-'+id;
+  let theme='intro';
+  if(id==='activity'){
+    const s=currentActivityQuestion()?.stage||'gather-same';
+    if(s.startsWith('gather'))theme='gather';
+    else if(s.startsWith('split'))theme='split';
+    else theme='merge';
+  }
+  screen.className='screen active theme-'+theme;
+  root.appendChild(screen);
+  updateProgress();
+  switch(id){
+    case 'mic':renderMicGate(screen);break;
+    case 'setup':renderSetup(screen);break;
+    case 'intro':renderIntro(screen);break;
+    case 'goals':renderGoals(screen);break;
+    case 'inquiry-pre':renderInquiry('pre');break;
+    case 'pre-record':renderRecord(screen,'pre');break;
+    case 'inquiry-post':renderInquiry('post');break;
+    case 'activity':renderActivity(screen);break;
+    case 'post-record':renderRecord(screen,'post');break;
+    case 'cert':renderCert(screen);break;
+  }
+  if(id==='activity') saveProgress();
+}
+function goBack(){
+  if(SCREEN_HISTORY.length===0){goHome();return;}
+  const prev=SCREEN_HISTORY.pop();
+  showScreen(prev,false);
+}
+function updateProgress(){
+  const t=APP_STATE.chosenCount,d=APP_STATE.activityIdx||0;
+  document.getElementById('progress-fill').style.width=(t>0?(d/t)*100:0)+'%';
+  document.getElementById('progress-label').textContent=APP_STATE.currentScreen==='activity'?`${d} / ${t}`:(['inquiry-post','post-record','cert'].includes(APP_STATE.currentScreen)?'완료':'준비');
+}
+function goHome(){
+  const _canResume=!GAS_URL&&APP_STATE.learnerName&&APP_STATE.currentScreen==='activity';
+  if(!confirm(_canResume?'처음 화면으로 돌아갈까요?\n지금까지 푼 곳은 이름을 고르면 이어서 할 수 있어요.':'처음 화면으로 돌아갈까요?'))return;
+  if(APP_STATE.currentScreen==='activity')saveProgress();
+  stopSpeech();
+  SCREEN_HISTORY.length=0;
+  Object.assign(APP_STATE,{learnerName:'',learnerClass:'',correct:0,total:0,activityIdx:0,activityQueue:[],
+    combo:0,maxCombo:0,collected:[],_speedState:null,_currentStage:null,_submitted:false,
+    preRecord:{text:'',audioBase64:null,helpCount:0,redoCount:0},
+    postRecord:{text:'',audioBase64:null,helpCount:0,redoCount:0,stars:0,stickers:[]}});
+  showScreen('mic');
+}
+
+// ============================================
+// 🎤 6. 마이크 허가 게이트
+// ============================================
+function renderMicGate(root){
+  root.innerHTML=`
+    <div class="theme-intro" style="position:absolute;inset:0"></div>
+    <div class="mic-gate" style="position:relative">
+      <div class="big-mic">🎤</div>
+      <div style="font-family:var(--font-display);font-size:40px;color:var(--intro-text)">마이크를 켜 볼까요?</div>
+      <div style="font-family:var(--font-display);font-size:22px;color:#666;max-width:600px;line-height:1.5">
+        모음이와 나눔이가 우리 이야기를 들으려고 해요.<br/>한 번만 허용해 주면 오늘 활동 내내 사용해요. 🌱
+      </div>
+      <button class="big-btn green" onclick="micProceed(true)">🎤 마이크 허용하기</button>
+      <div class="tutorial-hint">💡 위 버튼을 누르면 마이크 허가 창이 떠요</div>
+      <button class="skip-btn" onclick="micProceed(false)">마이크 없이 시작 (키보드로 써서 활동)</button>
+      <div class="mascot-corner"><div class="mascot-with-cap">${svgMoEum(130)}<svg class="grad-cap-svg" viewBox="-40 -22 80 30"><polygon points="-32,-2 32,-2 28,-10 -28,-10" fill="#2A2A4A" stroke="#1A1A30" stroke-width="1"/><rect x="-34" y="-2" width="68" height="5" fill="#2A2A4A" rx="1"/><line x1="18" y1="-4" x2="34" y2="-18" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"/><circle cx="34" cy="-18" r="5" fill="#FFD700" stroke="#D4A800" stroke-width="1.5"/></svg></div></div>
+      <div class="mascot-corner right"><div class="mascot-with-cap">${svgNaNum(130)}<svg class="ribbon-svg" viewBox="-30 -8 60 16"><path d="M -22 0 Q -10 -7 0 0 Q 10 -7 22 0 Q 10 7 0 0 Q -10 7 -22 0 Z" fill="#FF6FA8" stroke="#C73874" stroke-width="1.5"/><circle cx="0" cy="0" r="3" fill="#FFD700"/></svg></div></div>
+      <div class="speech">잠깐만, 같이 시작하자!</div>
+    </div>`;
+}
+async function micProceed(askMic){
+  if(askMic)await requestMicOnce();
+  try{getAudio().resume();}catch(e){}
+  if(window.__DATA_READY){
+    document.querySelectorAll('#screens .big-btn, #screens .skip-btn').forEach(b=>{b.disabled=true;});
+    const hint=document.querySelector('#screens .tutorial-hint');
+    if(hint)hint.textContent='⏳ 우리 반 명단을 불러오고 있어요…';
+    try{await window.__DATA_READY;}catch(e){}
+  }
+  showScreen('setup');
+}
+
+// ============================================
+// 🧑‍🎓 7. 학생 선택 + 문제 수
+// ============================================
+function renderSetup(root){
+  const opts=APP_STATE.students.map(s=>`<option value="${s.name}|${s.clazz}">${s.clazz?s.clazz+' ':''}${s.name}</option>`).join('');
+  root.innerHTML=`
+    <div class="theme-intro" style="position:absolute;inset:0"></div>
+    <div class="setup-wrap" style="position:relative">
+      <div class="setup-card">
+        <h2>🌱 누가 활동할까요?</h2>
+        <div class="setup-row">
+          <label>이름 골라요</label>
+          <select id="student-select"><option value="">— 이름을 골라요 —</option>${opts}</select>
+        </div>
+        <div class="setup-row">
+          <label>몇 문제를 풀어 볼까요?</label>
+          <div class="choice-row" id="count-row">
+            <button data-c="10">10문제<br><span style="font-size:.65em;opacity:.8;font-weight:normal">짧게</span></button>
+            <button data-c="15" class="selected">15문제<br><span style="font-size:.65em;opacity:.8;font-weight:normal">보통</span></button>
+            <button data-c="${APP_STATE.questions.length||24}">${APP_STATE.questions.length||24}문제<br><span style="font-size:.65em;opacity:.8;font-weight:normal">전체</span></button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:24px">
+          <button class="big-btn green" onclick="finishSetup()">시작하기 ▶</button>
+          <button id="__resumeBtn" onclick="resumeFromSetup()" style="display:none;background:#fff;border:3px solid #86efac;border-radius:999px;padding:10px 24px;font-size:18px;color:#16a34a;font-weight:700;cursor:pointer">이어서 하기 ▶</button>
+          <div class="tutorial-hint">💡 이름을 고르고 시작하기를 눌러요</div>
+          ${isStudentMode?'':'<button onclick="openSettings()" style="background:rgba(255,255,255,0.7);border:2px solid #86efac;border-radius:999px;padding:7px 16px;font-size:14px;color:#16a34a;font-weight:700;cursor:pointer;margin-top:4px">⚙️ 선생님 설정</button>'}
+        </div>
+      </div>
+      <div class="mascot-corner">${svgMoEum(130)}</div>
+      <div class="speech">이름을 골라 봐!</div>
+    </div>`;
+  root.querySelectorAll('#count-row button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      root.querySelectorAll('#count-row button').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');APP_STATE.chosenCount=+b.dataset.c;
+    });
+  });
+  var _sel=root.querySelector('#student-select');
+  if(_sel) _sel.addEventListener('change',()=>checkResumeButton(_sel.value));
+  speak('이름을 골라 주세요');
+}
+function finishSetup(){
+  const sel=document.getElementById('student-select');
+  if(!sel.value){alert('이름을 골라 주세요!');return;}
+  const [name,clazz]=sel.value.split('|');
+  APP_STATE.learnerName=name; APP_STATE.learnerClass=clazz;
+  prepareActivityQueue();
+  showScreen('intro');
+}
+
+function prepareActivityQueue(){
+  // 데이터에 정의된 학습 순서는 그대로 지키면서, 문항 수를 줄여도
+  // 모으기·가르기·마무리(선잇기·식 고르기) 활동이 고르게 섞이도록 뽑는다.
+  // 차근차근 도전(speed-round)은 마지막에 *반드시* 보장. 데이터에 없어도 자동 생성.
+  const all = APP_STATE.questions;
+  const want = APP_STATE.chosenCount || all.length;
+  const speedIdx = all.findIndex(q => q.stage === 'speed-round');
+  const speedQ = (speedIdx >= 0)
+    ? all[speedIdx]
+    : { id:'SPEED', stage:'speed-round', a:0, b:0, target:0, meta:'', kind:'' };
+  const others = all.filter(q => q.stage !== 'speed-round');
+  if (want >= others.length + 1) {
+    APP_STATE.activityQueue = others.concat([speedQ]);
+  } else if (want >= 2) {
+    // 갈래별 바구니: 모으기 / 가르기 / 그 밖
+    const bucketOf = q => /^gather/.test(q.stage) ? 0 : /^split/.test(q.stage) ? 1 : 2;
+    const buckets = [[],[],[]];
+    others.forEach(q => buckets[bucketOf(q)].push(q));
+    // 바구니 안에서는 단계마다 첫 문제부터 돌아가며 (같은 단계만 몰리지 않게)
+    const spread = list => {
+      const byStage = {}; const order = [];
+      list.forEach(q => { if(!byStage[q.stage]){byStage[q.stage]=[];order.push(q.stage);} byStage[q.stage].push(q); });
+      const out = []; let r = 0, added = true;
+      while (added) { added = false; order.forEach(st => { if (byStage[st][r]) { out.push(byStage[st][r]); added = true; } }); r++; }
+      return out;
+    };
+    const lists = buckets.map(spread);
+    const pick = []; const ptr = [0,0,0]; let b = 0, guard = 0;
+    while (pick.length < want-1 && guard < others.length*3) {
+      if (ptr[b] < lists[b].length) pick.push(lists[b][ptr[b]++]);
+      b = (b+1) % 3; guard++;
+    }
+    pick.sort((x,y) => others.indexOf(x) - others.indexOf(y));
+    APP_STATE.activityQueue = pick.concat([speedQ]);
+  } else {
+    APP_STATE.activityQueue = [speedQ];
+  }
+  APP_STATE.activityIdx = 0;
+}
+function currentActivityQuestion(){return APP_STATE.activityQueue?APP_STATE.activityQueue[APP_STATE.activityIdx]:null;}
+
+// ============================================
+// 🎉 8. 인트로
+// ============================================
+function renderIntro(root){
+  root.innerHTML=`
+    <div class="hero">
+      <div class="app-title">모으기와 가르기</div>
+      <div class="subtitle">— 모음이와 나눔이의 수 모험 —</div>
+      <div class="mascots">
+        <div class="mascot-wrap">${svgMoEum(160)}<div class="mascot-name m">모음이 (모으기)</div></div>
+        <div class="mascot-wrap">${svgNaNum(160)}<div class="mascot-name n">나눔이 (가르기)</div></div>
+      </div>
+      <div style="font-family:var(--font-display);font-size:22px;color:#8a6800">
+        ${APP_STATE.learnerName}${josaNameIGa(APP_STATE.learnerName)} ${APP_STATE.chosenCount}문제 모험을 시작해요!
+      </div>
+      <button class="big-btn" onclick="showScreen('goals')">계속하기 ▶</button>
+    </div>`;
+  speak('모으기와 가르기를 시작해요');
+}
+
+// ============================================
+// 🎯 9. 오늘의 목표
+// ============================================
+function renderGoals(root){
+  root.innerHTML=`
+    <div class="goals-wrap">
+      <div class="goals-title">🎯 오늘의 목표</div>
+      <div class="goal-list">
+        <div class="goal-item"><div class="goal-icon">1</div><div>두 수를 <span style="color:var(--gather-deep)">모아서</span> 합을 구할 수 있어요</div></div>
+        <div class="goal-item"><div class="goal-icon">2</div><div>한 수를 <span style="color:var(--split-deep)">두 수로 가르는</span> 방법을 찾을 수 있어요</div></div>
+        <div class="goal-item"><div class="goal-icon">3</div><div>같은 수도 <span style="color:var(--merge-accent)">여러 가지 방법</span>으로 표현할 수 있어요</div></div>
+      </div>
+      <button class="big-btn green" onclick="showScreen('inquiry-pre')">목표를 확인했어요 ✓</button>
+      <div class="mascot-corner">${svgMoEum(130)}</div>
+      <div class="speech">오늘 같이 해 보자!</div>
+    </div>`;
+  speak('오늘 목표를 살펴봐요');
+}
+
+// ============================================
+// 🤔 10. 탐구질문 팝업
+// ============================================
+function renderInquiry(phase){
+  const mount=document.getElementById('inquiry-mount');
+  const isPre=phase==='pre';
+  const cfg=isPre
+    ? {icon:'🤔',q:`왜 <span class='t-op'>모으기</span>와 <span class='t-op'>가르기</span>를 배울까요?`,a:`<span class='t-op'>모으기</span>는 두 수를 <span class='t-rel'>합</span>치는 것! <span class='t-op'>가르기</span>는 한 수를 둘로 나누는 것! <span class='t-op'>덧셈</span>과 <span class='t-op'>뺄셈</span>의 첫걸음이에요. 🌟`,next:'pre-record'}
+    : {icon:'💡',q:`활동을 마쳤어요! 새로 알게 된 게 뭘까요?`,a:`같은 수도 <span class='t-rel'>여러 가지 짝꿍</span>으로 모이고 갈라져요. <span class='t-op'>모으기</span>와 <span class='t-op'>가르기</span>는 서로 짝이에요!`,next:'post-record'};
+  mount.innerHTML=`
+    <div class="inquiry-modal">
+      <div class="inquiry-card">
+        <div class="icon">${cfg.icon}</div>
+        <h2 id="inquiry-q">${cfg.q}</h2>
+        <div class="answer-box" id="inquiry-a">${cfg.a}</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <button class="big-btn green" onclick="closeInquiry('${cfg.next}')">알겠어요! 다음 ▶</button>
+          <div class="tutorial-hint">💡 답을 읽고 다음 버튼을 누르세요</div>
+        </div>
+      </div>
+    </div>`;
+  // 글자 단위 TTS 하이라이트 (스피커 ON일 때만)
+  setTimeout(()=>{
+    // HTML 태그(.t-num/.t-op/.t-rel 강조) 보존 — TTS는 평문으로
+    if(APP_STATE.speakerOn){
+      const plain=cfg.a.replace(/<[^>]+>/g,'');
+      speak(plain,{rate:0.95});
+    }
+  },300);
+}
+function closeInquiry(next){
+  document.getElementById('inquiry-mount').innerHTML='';
+  // 사후 단계로 가기 전에는 activity 끝나야 함 → 'post-record'로 가는 거 OK
+  showScreen(next);
+}
+
+// ============================================
+// 🎤 11. 녹음 (사전·사후 공용)
+// ============================================
+let mediaRecorder=null,recordChunks=[],speechRecognition=null,finalTranscript='';
+function cleanTranscript(t){if(!t)return '';let c=t;c=c.replace(/\bT\d+[:\d]*\b/gi,'');c=c.replace(/\b[A-Z]\d+\b/g,'');c=c.replace(/(?:^|\s)[a-zA-Z](?=\s|$)/g,' ');return c.replace(/\s+/g,' ').trim();}
+function getExamples(phase){
+  if(phase==='pre')return[
+    '모으기는 두 묶음을 하나로 합치는 거예요',
+    '모으기는 더 많아지는 거예요',
+    '가르기는 한 묶음을 두 개로 나누는 거예요',
+    '잘 모르겠지만 한번 해 볼래요',
+  ];
+  return[
+    '모으기는 두 수를 더하는 것 같아요',
+    '가르기는 한 수를 두 수로 나누는 거예요',
+    '같은 수도 여러 가지 방법으로 가를 수 있어요',
+    '예를 들면 5는 1과 4, 2와 3으로 갈라져요',
+  ];
+}
+function renderRecord(root,phase){
+  const isPre=phase==='pre';
+  const rec=isPre?APP_STATE.preRecord:APP_STATE.postRecord;
+  const meaning=isPre
+    ? `<div class="record-meaning pre">📌 <b>활동 전 녹음</b><br/><span class="small">지금 아는 만큼만 말해도 좋아요 🌱</span></div>`
+    : `<div class="record-meaning post">🌟 <b>활동 후 녹음</b><br/><span class="small">새로 알게 된 것을 말해 줘요 🌟</span></div>`;
+  const prompt=isPre?'"모으기와 가르기"가 뭘까요?':'오늘 배운 "모으기와 가르기"는 뭘까요?';
+  root.className='screen active theme-intro';
+  root.innerHTML=`
+    <div class="record-wrap">
+      ${meaning}
+      <div style="font-family:var(--font-display);font-size:28px;color:#444;text-align:center" id="tts-prompt">${prompt}</div>
+      <div class="record-center">
+        <button class="record-btn-huge" id="rec-btn" onclick="toggleRecord('${phase}')"><div class="dot-big"></div></button>
+        <div class="tutorial-hint" id="rec-tutorial">👆 빨간 동그라미를 눌러 말해 봐요</div>
+      </div>
+      <div class="stt-display" id="stt-display" ${rec.text&&APP_STATE.micPermitted?'':'style="display:none"'}>
+        <div class="stt-label">📝 내가 한 말</div>
+        <div class="stt-text" id="stt-text">${rec.text||''}</div>
+      </div>
+      <button type="button" class="type-open" id="type-open" ${APP_STATE.micPermitted&&!(rec.text&&!rec.audioBase64)?'':'style="display:none"'}>⌨️ 말 대신 글로 쓸래요</button>
+      <div class="type-box" id="type-box" ${APP_STATE.micPermitted&&!(rec.text&&!rec.audioBase64)?'style="display:none"':''}>
+        <label for="rec-typed">⌨️ 말 대신 글로 써도 돼요</label>
+        <textarea id="rec-typed" maxlength="300" rows="2" placeholder="${isPre?'예) 두 수를 합치는 거예요':'예) 7은 3과 4로 가를 수 있어요'}">${rec.audioBase64?'':(rec.text||'')}</textarea>
+      </div>
+      <div class="record-bottom" id="rec-bottom">
+        <button class="big-btn green" id="next-btn" onclick="finishRecord('${phase}'); ${isPre?"showScreen('activity')":"showPostFollowup()"}" ${rec.audioBase64||rec.text?'':'style="display:none"'}>다음 ▶</button>
+        <button class="skip-btn" onclick="finishRecord('${phase}'); ${isPre?"showScreen('activity')":"showPostFollowup()"}">건너뛰기</button>
+      </div>
+      <div id="post-followup"></div>
+      <div class="mascot-corner">${isPre?svgMoEum(120):svgNaNum(120)}</div>
+      <div class="speech">${isPre?'네 생각을 자유롭게 말해 봐!':'오늘 새로 알게 된 게 뭐야?'}</div>
+    </div>`;
+  const ta=root.querySelector('#rec-typed');
+  const wrapEl=root.querySelector('.record-wrap');
+  const openTyping=()=>{
+    const tb=root.querySelector('#type-box'),to=root.querySelector('#type-open');
+    if(tb)tb.style.display='';if(to)to.style.display='none';
+    if(wrapEl)wrapEl.classList.add('typing');     // 글쓰기 칸이 열리면 마스코트 말풍선은 접어 둔다
+  };
+  if(root.querySelector('#type-box')&&root.querySelector('#type-box').style.display!=='none'&&wrapEl)wrapEl.classList.add('typing');
+  const toBtn=root.querySelector('#type-open');
+  if(toBtn)toBtn.addEventListener('click',()=>{openTyping();setTimeout(()=>{try{ta.focus();}catch(e){}},50);});
+  if(ta){
+    ta.addEventListener('input',()=>{
+      rec.text=ta.value.trim();
+      const nb=document.getElementById('next-btn');
+      if(nb)nb.style.display=(rec.text||rec.audioBase64)?'':'none';
+    });
+    if(!APP_STATE.micPermitted)setTimeout(()=>{try{ta.focus();}catch(e){}},300);
+  }
+  speak(prompt);
+}
+
+async function toggleRecord(phase){
+  const btn=document.getElementById('rec-btn');
+  const tutorial=document.getElementById('rec-tutorial');
+  const sttDisplay=document.getElementById('stt-display');
+  const sttText=document.getElementById('stt-text');
+  const nextBtn=document.getElementById('next-btn');
+  const rec=phase==='pre'?APP_STATE.preRecord:APP_STATE.postRecord;
+
+  if(!mediaRecorder||mediaRecorder.state==='inactive'){
+    if(!APP_STATE.micPermitted){
+      const ok=await requestMicOnce();
+      if(!ok){tutorial.textContent='⚠️ 마이크 없이도 건너뛰기로 진행할 수 있어요';return;}
+    }
+    try{
+      let stream=APP_STATE.micStream;
+      if(!stream||!stream.active){stream=await navigator.mediaDevices.getUserMedia({audio:true});APP_STATE.micStream=stream;}
+      mediaRecorder=new MediaRecorder(stream);
+      recordChunks=[];finalTranscript='';
+      sttDisplay.style.display='';sttDisplay.style.visibility='visible';sttText.textContent='';
+      mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordChunks.push(e.data);};
+      mediaRecorder.onstop=()=>{
+        const blob=new Blob(recordChunks,{type:'audio/webm'});
+        const reader=new FileReader();
+        reader.onloadend=()=>{
+          rec.audioBase64=reader.result;rec.text=sttText.textContent||'';
+          tutorial.textContent='✨ 멋져요! 다음으로 가거나 다시 눌러 새로 녹음해요';
+          if(nextBtn) nextBtn.style.display='';
+        };
+        reader.readAsDataURL(blob);
+      };
+      mediaRecorder.start();
+      btn.classList.add('recording');
+      tutorial.textContent='🔴 듣고 있어요… 다 했으면 다시 눌러요';
+
+      const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+      if(SR){
+        speechRecognition=new SR();
+        speechRecognition.lang='ko-KR';speechRecognition.continuous=true;speechRecognition.interimResults=true;
+        speechRecognition.onresult=(event)=>{
+          let im='';
+          for(let i=event.resultIndex;i<event.results.length;i++){
+            const r=event.results[i];
+            if(r.isFinal)finalTranscript+=r[0].transcript+' ';
+            else im+=r[0].transcript;
+          }
+          sttText.textContent=cleanTranscript(finalTranscript)+(im?' '+im:'');
+        };
+        speechRecognition.onerror=(e)=>console.warn('STT:',e.error);
+        speechRecognition.onend=()=>{};
+        try{speechRecognition.start();}catch(e){}
+      }
+    }catch(err){tutorial.textContent='⚠️ 마이크 오류! 건너뛰기로 진행해 봐요';}
+  }else{
+    mediaRecorder.stop();btn.classList.remove('recording');
+    if(speechRecognition){try{speechRecognition.stop();}catch(e){}speechRecognition=null;}
+  }
+}
+
+function finishRecord(phase){
+  const rec=phase==='pre'?APP_STATE.preRecord:APP_STATE.postRecord;
+  const sttText=document.getElementById('stt-text');
+  const typed=document.getElementById('rec-typed');
+  const typedVal=typed?typed.value.trim():'';
+  if(typedVal)rec.text=typedVal;                       // 글로 쓴 것이 있으면 그것을 쓴다
+  else if(sttText)rec.text=sttText.textContent||rec.text;
+  if(mediaRecorder&&mediaRecorder.state!=='inactive'){try{mediaRecorder.stop();}catch(e){}}
+  if(speechRecognition){try{speechRecognition.stop();}catch(e){}speechRecognition=null;}
+}
+
+// 사후 — 자기평가 별점 + 스티커
+function showPostFollowup(){
+  const mount=document.getElementById('post-followup');
+  if(!mount)return;
+  // 사후 후속 모드 — 마스코트·말풍선·하단버튼·라벨 숨김 + padding 축소
+  const wrap=document.querySelector('.record-wrap');
+  if(wrap)wrap.classList.add('post-followup-mode');
+  // 스크롤 위로
+  if(wrap)wrap.scrollTop=0;
+  mount.innerHTML=`
+    <div class="self-eval">
+      <h3>⭐ 내 녹음, 어땠어요?</h3>
+      <div class="star-row" id="star-row">${[1,2,3,4,5].map(n=>`<span class="star" data-n="${n}">★</span>`).join('')}</div>
+      <div class="tutorial-hint">💡 별을 눌러 스스로 평가해 봐요 (정답은 없어요!)</div>
+      <div id="eval-result" style="margin-top:8px"></div>
+    </div>`;
+  mount.querySelectorAll('.star').forEach(s=>{
+    s.addEventListener('click',()=>{
+      const n=+s.dataset.n;APP_STATE.postRecord.stars=n;
+      mount.querySelectorAll('.star').forEach(x=>x.classList.toggle('filled',+x.dataset.n<=n));
+      sfxCheer();
+      const er=document.getElementById('eval-result');
+      if(n<=3){
+        er.innerHTML=`
+          <div style="background:#FEF3C7;border:3px solid #F59E0B;border-radius:14px;padding:12px;font-family:var(--font-display);font-size:20px;color:#92400E">
+            🌱 다시 한번 도전해 볼까요?
+            <div style="margin-top:8px;display:flex;gap:10px;justify-content:center">
+              <button class="big-btn small green" onclick="reRecordPost()">🔄 다시 녹음</button>
+              <button class="big-btn small gray" onclick="goToStickerStep()">괜찮아요, 다음</button>
+            </div>
+          </div>`;
+      }else{
+        er.innerHTML=`
+          <div style="font-family:var(--font-display);font-size:22px;color:var(--gather-deep);margin-bottom:8px">🎉 멋져요!</div>
+          <div style="display:flex;gap:10px;justify-content:center">
+            <button class="big-btn small gray" onclick="reRecordPost()">🔄 한번 더 녹음</button>
+            <button class="big-btn small green" onclick="goToStickerStep()">✨ 스티커 받기</button>
+          </div>`;
+      }
+    });
+  });
+}
+function reRecordPost(){
+  APP_STATE.postRecord.audioBase64=null;
+  APP_STATE.postRecord.text='';
+  APP_STATE.postRecord.redoCount++;
+  showScreen('post-record',false);
+}
+
+function goToStickerStep(){
+  const mount=document.getElementById('post-followup');
+  mount.innerHTML=`
+    <div class="sticker-box">
+      <h3>🎁 스스로에게 스티커를 줘 봐요</h3>
+      <div class="tutorial-hint">💡 오늘 가장 잘했다고 생각하는 것에 눌러요 (여러 개 가능)</div>
+      <div class="sticker-row" style="margin-top:10px">
+        <span class="sticker-btn" data-s="⭐">⭐</span>
+        <span class="sticker-btn" data-s="🌟">🌟</span>
+        <span class="sticker-btn" data-s="💖">💖</span>
+        <span class="sticker-btn" data-s="🌸">🌸</span>
+        <span class="sticker-btn" data-s="🏆">🏆</span>
+        <span class="sticker-btn" data-s="🌈">🌈</span>
+      </div>
+      <div style="margin-top:14px"><button class="big-btn green" onclick="finalizePost()">수료증 받기 ▶</button></div>
+    </div>`;
+  mount.querySelectorAll('.sticker-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const s=b.dataset.s;const arr=APP_STATE.postRecord.stickers;
+      const i=arr.indexOf(s);
+      if(i===-1){arr.push(s);b.classList.add('picked');launchConfetti(20);sfxCheer();}
+      else{arr.splice(i,1);b.classList.remove('picked');}
+    });
+  });
+}
+
+async function finalizePost(){
+  finishRecord('post');
+  if(GAS_URL&&!APP_STATE._submitted){
+    APP_STATE._submitted=true;
+    try{
+      const payload={
+        app:APP_PREFIX,
+        name:APP_STATE.learnerName,clazz:APP_STATE.learnerClass,
+        preText:APP_STATE.preRecord.text,preAudio:APP_STATE.preRecord.audioBase64||'',
+        postText:APP_STATE.postRecord.text,postAudio:APP_STATE.postRecord.audioBase64||'',
+        selfStars:APP_STATE.postRecord.stars,stickers:APP_STATE.postRecord.stickers,
+        helpCount:APP_STATE.preRecord.helpCount+APP_STATE.postRecord.helpCount,
+        redoCount:APP_STATE.preRecord.redoCount+APP_STATE.postRecord.redoCount,
+        correct:APP_STATE.correct,total:APP_STATE.total,chosenCount:APP_STATE.chosenCount,
+      };
+      await fetch(GAS_URL,{method:'POST',body:JSON.stringify(payload),headers:{'Content-Type':'text/plain;charset=utf-8'}});
+    }catch(e){console.warn('GAS 전송 실패',e);}
+  }
+  clearProgress();
+  showScreen('cert');
+}
+
+// ============================================
+// 📚 12. 활동 라우터
+// ============================================
+function renderActivity(root){
+  const q=currentActivityQuestion();
+  if(!q){showScreen('inquiry-post');return;}
+  APP_STATE._currentStage = q.stage;  // 🆕 도감 매핑용 — 정답 시 markCollected 호출
+  switch(q.stage){
+    case 'gather-same': return drawGatherSimple(root,q,'같은 두 수를 모으면');
+    case 'gather-mixed':return drawGatherSimple(root,q,'두 묶음을 모으면');
+    case 'gather-card': return drawCardSum(root,q);
+    case 'gather-find-pair': return drawFindPair(root,q,'gather');
+    case 'split-find-pair':  return drawFindPair(root,q,'split');
+    case 'connect-pairs':    return drawConnectPairs(root,q);
+    case 'choose-equation':  return drawChooseEquation(root,q);
+    case 'tenframe-carry':   return drawTenFrameCarry(root,q);
+    case 'tenframe-borrow':  return drawTenFrameBorrow(root,q);
+    case 'vertical-add':     return drawVerticalAdd(root,q);
+    case 'vertical-sub':     return drawVerticalSub(root,q);
+    case 'speed-round':      return drawSpeedRound(root,q);
+    case 'gather-many': return drawBranchMany(root,q,'gather');
+    case 'split-equal': return drawSplitEqual(root,q);
+    case 'split-card':  return drawSplitCard(root,q);
+    case 'split-many':  return drawBranchMany(root,q,'split');
+    default: nextActivity();
+  }
+}
+let _NEXT_BUSY=false;
+async function nextActivity(){
+  if(APP_STATE.currentScreen!=='activity')return;   // 이미 다른 화면(처음·이전)으로 갔으면 넘기지 않는다
+  if(_NEXT_BUSY)return;
+  _NEXT_BUSY=true;
+  const fromScreen=APP_STATE.currentScreen, fromIdx=APP_STATE.activityIdx;
+  try{ await waitSpeechDone(4000); } finally { _NEXT_BUSY=false; }
+  // 기다리는 사이 학생이 홈·이전으로 갔으면 넘기지 않는다
+  if(APP_STATE.currentScreen!==fromScreen||APP_STATE.activityIdx!==fromIdx)return;
+  APP_STATE.activityIdx++;
+  if(APP_STATE.activityIdx>=APP_STATE.activityQueue.length)showScreen('inquiry-post');
+  else showScreen('activity');
+}
+// ============================================
+// 🎮 게임 요소 시스템 (콤보 별 + 도감)
+// ============================================
+const STAGE_CATEGORY={
+  'gather-same':'모으기','gather-mixed':'모으기','gather-card':'모으기',
+  'split-equal':'가르기','split-card':'가르기',
+  'tenframe-carry':'10판','tenframe-borrow':'10판',
+  'vertical-add':'세로셈','vertical-sub':'세로셈',
+  'gather-find-pair':'짝꿍','split-find-pair':'짝꿍',
+  'gather-many':'분지','split-many':'분지',
+  'connect-pairs':'선잇기','choose-equation':'식고르기',
+  'speed-round':'차근차근'
+};
+const CATEGORY_INFO={
+  '모으기':{icon:'🛒',label:'모으기'},
+  '가르기':{icon:'🐰',label:'가르기'},
+  '10판':{icon:'🟦',label:'10판'},
+  '세로셈':{icon:'🎭',label:'세로셈'},
+  '짝꿍':{icon:'🤝',label:'짝꿍찾기'},
+  '분지':{icon:'🌳',label:'분지나무'},
+  '선잇기':{icon:'🔗',label:'선잇기'},
+  '식고르기':{icon:'✅',label:'식고르기'},
+  '차근차근':{icon:'🎯',label:'차근차근'}
+};
+
+function markCollected(stage){
+  const cat=STAGE_CATEGORY[stage];
+  if(!cat)return;
+  if(!APP_STATE.collected)APP_STATE.collected=[];
+  if(!APP_STATE.collected.includes(cat)){
+    APP_STATE.collected.push(cat);
+    showCollectStamp(cat);
+  }
+}
+
+function showCollectStamp(cat){
+  const info=CATEGORY_INFO[cat];if(!info)return;
+  const stamp=document.createElement('div');
+  stamp.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.3);background:linear-gradient(135deg,#FFE066,#FFC23C);color:#222;padding:18px 28px;border-radius:24px;font-family:var(--font-display);font-size:22px;font-weight:bold;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:9999;opacity:0;transition:all .5s cubic-bezier(.34,1.56,.64,1);text-align:center;border:4px solid #fff';
+  stamp.innerHTML=`<div style="font-size:46px;line-height:1">${info.icon}</div><div style="font-size:18px;margin-top:6px">🎨 ${info.label} 도감 +1</div>`;
+  stamp.classList.add('anim-temp');document.body.appendChild(stamp);
+  requestAnimationFrame(()=>{
+    stamp.style.opacity='1';
+    stamp.style.transform='translate(-50%,-50%) scale(1)';
+  });
+  if(APP_STATE.speakerOn&&typeof speak==='function')speak(`${info.label} 도감!`,{rate:1.05,mode:'queue'});
+  setTimeout(()=>{
+    stamp.style.opacity='0';
+    stamp.style.transform='translate(-50%,-50%) scale(.3) translateY(-40px)';
+    setTimeout(()=>stamp.remove(),500);
+  },1400);
+}
+
+function showCombo(n){
+  if(n<2)return;
+  const existing=document.querySelector('.combo-popup');if(existing)existing.remove();
+  const stars='⭐'.repeat(Math.min(n,5));
+  const big=n>=5;
+  const pop=document.createElement('div');
+  pop.className='combo-popup';
+  pop.style.cssText=`position:fixed;top:90px;left:50%;transform:translateX(-50%) translateY(-30px) scale(.8);background:linear-gradient(180deg,${big?'#FFD700':'#FFE066'},${big?'#FF8C00':'#FFC23C'});color:#222;padding:${big?14:10}px ${big?32:24}px;border-radius:99px;font-family:var(--font-display);font-size:${big?28:22}px;font-weight:bold;box-shadow:0 ${big?10:6}px ${big?24:18}px rgba(0,0,0,.35);z-index:1000;opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);border:3px solid #fff;white-space:nowrap`;
+  pop.innerHTML=`${stars} ${n}연속!`;
+  document.body.appendChild(pop);
+  requestAnimationFrame(()=>{
+    pop.style.opacity='1';
+    pop.style.transform='translateX(-50%) translateY(0) scale(1)';
+  });
+  if(big){launchConfetti(25);if(APP_STATE.speakerOn)speak(`${n}연속! 정말 잘하고 있어`,{rate:1.05,mode:'queue'});}
+  setTimeout(()=>{
+    pop.style.opacity='0';
+    pop.style.transform='translateX(-50%) translateY(-30px) scale(.8)';
+    setTimeout(()=>pop.remove(),400);
+  },1600);
+}
+
+function recordCorrect(){
+  APP_STATE.correct++;APP_STATE.total++;
+  APP_STATE.combo=(APP_STATE.combo||0)+1;
+  APP_STATE.maxCombo=Math.max(APP_STATE.maxCombo||0,APP_STATE.combo);
+  if(APP_STATE._currentStage)markCollected(APP_STATE._currentStage);
+  if(APP_STATE.combo>=2)showCombo(APP_STATE.combo);
+}
+function recordWrong(){APP_STATE.total++;APP_STATE.combo=0;sfxWrong();}
+function showFeedback(correct,msg){
+  if(APP_STATE.currentScreen!=='activity')return;
+  const fb=document.getElementById('feedback');const card=document.getElementById('feedback-card');
+  card.classList.toggle('wrong',!correct);
+  card.textContent=msg||(correct?(getEncouragement()):'다시 해 봐요 💪');
+  fb.classList.add('show');card.style.animation='none';void card.offsetWidth;card.style.animation='fb-pop .5s forwards';
+  speak(card.textContent,{mode:'protect',rate:1.0});
+  // 마스코트 반응
+  if(correct){
+    document.querySelectorAll('.mascot-corner').forEach(m=>{
+      m.classList.add('mascot-jumping');
+      setTimeout(()=>m.classList.remove('mascot-jumping'),700);
+    });
+    launchConfetti(30);
+  }
+  setTimeout(()=>{fb.classList.remove('show');card.style.animation='none';card.style.opacity='0';},1200);
+}
+function getEncouragement(){
+  const msgs=['잘했어요! 👍','멋져요! ✨','정확해요! 🎉','대단해요! 🌟','맞아요! 💚'];
+  return msgs[Math.floor(Math.random()*msgs.length)];
+}
+
+// 구체물 SVG
+const OBJECT_SVG={
+  ball:(c='#E84545')=>`<svg width="42" height="42" viewBox="0 0 44 44"><circle cx="22" cy="23" r="18" fill="${c}"/><ellipse cx="15" cy="15" rx="6" ry="4" fill="rgba(255,255,255,.5)"/><circle cx="22" cy="23" r="18" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="1.5"/></svg>`,
+  truck:(c='#E84545')=>`<svg width="60" height="44" viewBox="0 0 64 48"><rect x="2" y="14" width="38" height="22" rx="3" fill="${c}"/><rect x="40" y="22" width="20" height="14" rx="3" fill="#3990D8"/><rect x="44" y="26" width="12" height="7" fill="#B5E0FF"/><circle cx="14" cy="40" r="6" fill="#222"/><circle cx="48" cy="40" r="6" fill="#222"/></svg>`,
+  apple:()=>`<svg width="40" height="44" viewBox="0 0 44 48"><path d="M22 8 Q26 4 30 6" stroke="#5A2E0E" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="9" rx="5" ry="3" fill="#5BB836" transform="rotate(30 28 9)"/><ellipse cx="22" cy="28" rx="17" ry="18" fill="#E84545"/></svg>`,
+  flower:(c='#FFD93C')=>`<svg width="38" height="44" viewBox="0 0 42 48"><rect x="20" y="20" width="2" height="22" fill="#2F7A12"/><circle cx="21" cy="14" r="7" fill="${c}"/><circle cx="11" cy="20" r="7" fill="${c}"/><circle cx="31" cy="20" r="7" fill="${c}"/><circle cx="16" cy="8" r="7" fill="${c}"/><circle cx="26" cy="8" r="7" fill="${c}"/><circle cx="21" cy="16" r="4.5" fill="#fff"/></svg>`,
+  bear:()=>`<svg width="38" height="44" viewBox="0 0 42 48"><ellipse cx="11" cy="14" rx="6" ry="6" fill="#6E3A1A"/><ellipse cx="31" cy="14" rx="6" ry="6" fill="#6E3A1A"/><ellipse cx="21" cy="28" rx="16" ry="15" fill="#A86A3A"/><circle cx="16" cy="24" r="2" fill="#222"/><circle cx="26" cy="24" r="2" fill="#222"/><ellipse cx="21" cy="32" rx="5" ry="3" fill="#FFD8B5"/></svg>`,
+};
+function objsRow(svgFn,count,color){let h='';for(let i=0;i<count;i++)h+=`<span class="obj" style="animation-delay:${i*0.07}s">${svgFn(color)}</span>`;return h;}
+
+// 마스코트 SVG
+function svgMoEum(size=140){return `<svg viewBox="0 0 140 160" width="${size}" xmlns="http://www.w3.org/2000/svg"><ellipse cx="70" cy="148" rx="40" ry="6" fill="rgba(0,0,0,.15)"/><ellipse cx="70" cy="85" rx="55" ry="58" fill="url(#mo-body)"/><defs><radialGradient id="mo-body" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#FFF099"/><stop offset="60%" stop-color="#FFD93C"/><stop offset="100%" stop-color="#E8B100"/></radialGradient></defs><ellipse cx="40" cy="98" rx="10" ry="7" fill="#FFB1C5" opacity=".8"/><ellipse cx="100" cy="98" rx="10" ry="7" fill="#FFB1C5" opacity=".8"/><ellipse cx="52" cy="78" rx="9" ry="11" fill="#222"/><ellipse cx="88" cy="78" rx="9" ry="11" fill="#222"/><circle cx="55" cy="74" r="3" fill="#fff"/><circle cx="91" cy="74" r="3" fill="#fff"/><path d="M60 100 Q70 112 80 100" stroke="#5D3000" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="25" cy="105" rx="14" ry="9" fill="#FFD93C" transform="rotate(-30 25 105)"/><ellipse cx="115" cy="105" rx="14" ry="9" fill="#FFD93C" transform="rotate(30 115 105)"/><path d="M60 28 Q70 18 80 28" stroke="#E8B100" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;}
+function svgNaNum(size=140){return `<svg viewBox="0 0 140 160" width="${size}" xmlns="http://www.w3.org/2000/svg"><ellipse cx="70" cy="148" rx="40" ry="6" fill="rgba(0,0,0,.15)"/><ellipse cx="42" cy="32" rx="11" ry="22" fill="#FFB1D2" transform="rotate(-15 42 32)"/><ellipse cx="98" cy="32" rx="11" ry="22" fill="#FFB1D2" transform="rotate(15 98 32)"/><ellipse cx="42" cy="34" rx="6" ry="14" fill="#FF7CAA" transform="rotate(-15 42 34)"/><ellipse cx="98" cy="34" rx="6" ry="14" fill="#FF7CAA" transform="rotate(15 98 34)"/><ellipse cx="70" cy="92" rx="55" ry="55" fill="url(#na-body)"/><defs><radialGradient id="na-body" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#FFE7F0"/><stop offset="60%" stop-color="#FFB1D2"/><stop offset="100%" stop-color="#E0689A"/></radialGradient></defs><ellipse cx="40" cy="105" rx="10" ry="7" fill="#FF6FA8" opacity=".6"/><ellipse cx="100" cy="105" rx="10" ry="7" fill="#FF6FA8" opacity=".6"/><ellipse cx="52" cy="85" rx="9" ry="11" fill="#222"/><ellipse cx="88" cy="85" rx="9" ry="11" fill="#222"/><circle cx="55" cy="81" r="3" fill="#fff"/><circle cx="91" cy="81" r="3" fill="#fff"/><path d="M62 107 Q70 116 78 107" stroke="#5D1235" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;}
+
+function shuffleArr(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function uniqueArr(arr){return [...new Set(arr)];}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ============================================
+// ⌨️ 키패드 — 직접 입력
+// ============================================
+// ============================================
+// 🔤 한국어 조사 자동 처리 (수 받침 기준)
+// ============================================
+function josaUn(n){const ld=n%10;return n===0||![2,4,5,9].includes(ld)?'은':'는';}
+function josaWa(n){const ld=n%10;return n===0||![2,4,5,9].includes(ld)?'과':'와';}
+function josaReul(n){const ld=n%10;return n===0||![2,4,5,9].includes(ld)?'을':'를';}
+function josaRo(n){const ld=n%10;return n===0||![1,2,4,5,7,8,9].includes(ld)?'으로':'로';}
+
+let CURRENT_INPUT='';
+let CURRENT_CHECK_FN=null;
+let KEYPAD_LOCKED=false;
+let CURRENT_ANSWER_DIGITS=1;
+
+function renderKeypad(){
+  return `<div class="keypad" id="keypad">
+    ${[1,2,3,4,5,6,7,8,9,0].map(n=>`<button class="key" onclick="keyPress(${n})">${n}</button>`).join('')}
+    <button class="key del" onclick="keyDel()">⌫</button>
+    <button class="key check" id="check-btn" onclick="keyCheck()" disabled>확인 ✓</button>
+  </div>`;
+}
+
+function keyPress(n){
+  if(KEYPAD_LOCKED)return;
+  if(CURRENT_INPUT.length>=CURRENT_ANSWER_DIGITS)return;  // 답 자릿수까지만 받음
+  CURRENT_INPUT+=n;
+  updateInputDisplay();
+  playTone(800+n*30,0.05,'sine',0.2);
+}
+function keyDel(){
+  if(KEYPAD_LOCKED)return;
+  CURRENT_INPUT=CURRENT_INPUT.slice(0,-1);
+  updateInputDisplay();
+  playTone(400,0.05,'sine',0.15);
+}
+function keyCheck(){
+  if(KEYPAD_LOCKED||!CURRENT_INPUT||!CURRENT_CHECK_FN)return;
+  CURRENT_CHECK_FN(+CURRENT_INPUT);
+}
+function updateInputDisplay(){
+  const checkBtn=document.getElementById('check-btn');
+  // 세로셈 두 슬롯 케이스
+  const tensSlot=document.getElementById('ans-tens');
+  const onesSlot=document.getElementById('ans-ones');
+  if(tensSlot && onesSlot){
+    const inp=CURRENT_INPUT;
+    if(CURRENT_ANSWER_DIGITS===2){
+      if(inp.length===0){
+        tensSlot.innerHTML='<span class="cursor-blink"></span>';
+        tensSlot.classList.add('empty','input-active');tensSlot.classList.remove('filled-input');
+        onesSlot.textContent='?';
+        onesSlot.classList.add('empty');onesSlot.classList.remove('input-active','filled-input');
+      }else if(inp.length===1){
+        tensSlot.textContent=inp[0];
+        tensSlot.classList.add('filled-input');tensSlot.classList.remove('empty','input-active');
+        onesSlot.innerHTML='<span class="cursor-blink"></span>';
+        onesSlot.classList.add('empty','input-active');onesSlot.classList.remove('filled-input');
+      }else{
+        tensSlot.textContent=inp[0];
+        tensSlot.classList.add('filled-input');tensSlot.classList.remove('empty','input-active');
+        onesSlot.textContent=inp[1];
+        onesSlot.classList.add('filled-input');onesSlot.classList.remove('empty','input-active');
+      }
+    }else{
+      tensSlot.style.visibility='hidden';
+      if(inp.length===0){
+        onesSlot.innerHTML='<span class="cursor-blink"></span>';
+        onesSlot.classList.add('empty','input-active');onesSlot.classList.remove('filled-input');
+      }else{
+        onesSlot.textContent=inp;
+        onesSlot.classList.add('filled-input');onesSlot.classList.remove('empty','input-active');
+      }
+    }
+    if(checkBtn)checkBtn.disabled=(inp.length<CURRENT_ANSWER_DIGITS);
+    return;
+  }
+  const slot=document.getElementById('answer-slot');
+  if(!slot)return;
+  if(CURRENT_INPUT){
+    slot.classList.remove('empty','input-active');
+    slot.classList.add('input-active','filled-input');
+    slot.textContent=CURRENT_INPUT;
+    if(checkBtn)checkBtn.disabled=(CURRENT_INPUT.length<CURRENT_ANSWER_DIGITS);
+  }else{
+    slot.classList.add('empty','input-active');
+    slot.classList.remove('filled-input');
+    slot.innerHTML='<span class="cursor-blink"></span>';
+    if(checkBtn)checkBtn.disabled=true;
+  }
+}
+function setupKeypadCheck(answer,motionFn){
+  CURRENT_INPUT='';
+  KEYPAD_LOCKED=false;
+  CURRENT_ANSWER_DIGITS=String(answer).length;
+  updateInputDisplay();
+  CURRENT_CHECK_FN=async(val)=>{
+    if(KEYPAD_LOCKED)return;
+    if(val===answer){
+      KEYPAD_LOCKED=true;
+      const slot=document.getElementById('answer-slot');
+      const tensSlot=document.getElementById('ans-tens');
+      const onesSlot=document.getElementById('ans-ones');
+      if(slot){
+        slot.classList.remove('empty','input-active');
+        slot.classList.add('filled','correct-fill');
+        slot.textContent=answer;
+      }
+      if(tensSlot && onesSlot){
+        const s=String(answer);
+        if(s.length===2){
+          tensSlot.textContent=s[0];
+          tensSlot.classList.remove('empty','input-active');
+          tensSlot.classList.add('filled','correct-fill');
+          onesSlot.textContent=s[1];
+          onesSlot.classList.remove('empty','input-active');
+          onesSlot.classList.add('filled','correct-fill');
+        }else{
+          onesSlot.textContent=s;
+          onesSlot.classList.remove('empty','input-active');
+          onesSlot.classList.add('filled','correct-fill');
+        }
+      }
+      sfxCorrect();recordCorrect();
+      if(motionFn) await motionFn();
+      setTimeout(()=>{showFeedback(true);setTimeout(nextActivity,800);},200);
+    }else{
+      recordWrong();
+      const slot=document.getElementById('answer-slot');
+      const tensSlot=document.getElementById('ans-tens');
+      const onesSlot=document.getElementById('ans-ones');
+      if(slot){slot.classList.add('shake');setTimeout(()=>slot.classList.remove('shake'),500);}
+      if(tensSlot){tensSlot.classList.add('shake');setTimeout(()=>tensSlot.classList.remove('shake'),500);}
+      if(onesSlot){onesSlot.classList.add('shake');setTimeout(()=>onesSlot.classList.remove('shake'),500);}
+      const sp=document.querySelector('.activity .speech');
+      if(sp)sp.textContent='아쉬워! 차근차근 다시 세어 봐';
+      CURRENT_INPUT='';
+      setTimeout(()=>updateInputDisplay(),500);
+    }
+  };
+}
+
+function createBurst(x,y,size=200){
+  const b=document.createElement('div');
+  b.className='burst-effect';
+  b.style.left=x+'px';b.style.top=y+'px';b.style.width=size+'px';b.style.height=size+'px';
+  document.body.appendChild(b);
+  setTimeout(()=>b.remove(),750);
+}
+
+// 별 SVG — 카드 활동·분지 트리 카운팅용
+const STAR_SVG=(c,s)=>{if(typeof c!=='string'||!c.startsWith('#')){c='#FFD93C';s='#E8B100';}return `<svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,3 25,15 38,15 27,23 31,36 20,28 9,36 13,23 2,15 15,15" fill="${c}" stroke="${s}" stroke-width="2"/></svg>`;};
+const HEART_SVG=()=>`<svg width="40" height="36" viewBox="0 0 40 36"><path d="M20 33 C 20 33, 4 22, 4 12 C 4 6, 9 3, 13 3 C 17 3, 20 7, 20 7 C 20 7, 23 3, 27 3 C 31 3, 36 6, 36 12 C 36 22, 20 33, 20 33 Z" fill="#FF6FA8" stroke="#C73874" stroke-width="2"/></svg>`;
+
+
+// ============================================
+// ✨ 카운팅 팝업 — 객체를 차례로 1,2,3,... 세고 빅 넘버 등장
+// ============================================
+// 자릿값 모형 HTML 생성 — 십 막대 + 일 큐브
+function placeValueHtml(count){
+  const tens=Math.floor(count/10), ones=count%10;
+  const tenBars=Array.from({length:tens},(_,i)=>`<div class="tv-ten-bar" style="display:grid;grid-template-columns:repeat(2,14px);grid-template-rows:repeat(5,14px);gap:2px;background:#1A4D80;padding:3px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.25);animation:pv-pop .3s ${i*0.08}s both">${Array(10).fill('<div style="background:#A8C8F0;border-radius:2px"></div>').join('')}</div>`).join('');
+  const oneBlocks=Array.from({length:ones},(_,i)=>`<div style="width:20px;height:20px;background:#FF5252;border:2px solid #B81010;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,.2);animation:pv-pop .3s ${(tens*0.08)+(i*0.06)}s both"></div>`).join('');
+  return `
+    <style>@keyframes pv-pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}</style>
+    <div style="display:flex;gap:20px;align-items:center;justify-content:center;padding:18px 8px;flex-wrap:wrap">
+      ${tens>0?`<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:420px">${tenBars}</div>
+        <div style="font-family:var(--font-display);font-size:20px;color:#1A4D80">십 ${tens}개</div>
+      </div>`:''}
+      ${tens>0 && ones>0?`<div style="font-family:var(--font-display);font-size:36px;color:#666">+</div>`:''}
+      ${ones>0?`<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;max-width:180px">${oneBlocks}</div>
+        <div style="font-family:var(--font-display);font-size:20px;color:#B81010">일 ${ones}개</div>
+      </div>`:''}
+    </div>`;
+}
+
+async function showCountPopup(itemSvgFn,count,opts={}){
+  return new Promise(resolve=>{
+    const popup=document.createElement('div');
+    popup.className='count-popup'+(opts.split?' split-pop':'');
+    const isLarge=count>20;
+    if(isLarge){
+      // 자릿값 시각화
+      popup.innerHTML=`
+        <div class="pop-title">${opts.title||'자릿값으로 볼까요?'}</div>
+        ${placeValueHtml(count)}
+        <div class="big-num show">${count}<span class="unit">이에요</span></div>`;
+      document.body.appendChild(popup);
+      (async()=>{
+        await sleep(500);
+        sfxCheer();
+        if(APP_STATE.speakerOn)await speak(`모두 ${count}${copulaYeyo(count)}`,{rate:0.95});
+        await sleep(1500);
+        popup.style.transition='opacity .4s, transform .4s';
+        popup.style.opacity='0';popup.style.transform='translate(-50%,-50%) scale(.85)';
+        await sleep(420);popup.remove();resolve();
+      })();
+      return;
+    }
+    // 작은 수: 기존 별 카운팅
+    popup.innerHTML=`
+      <div class="pop-title">${opts.title||'하나씩 세어 볼까요?'}</div>
+      <div class="pop-items">
+        ${[...Array(count)].map((_,i)=>`<span class="pop-item" data-i="${i}"><span class="num-tag" style="${i+1>10?'background:#FF8800;color:#fff;font-weight:bold;':''}">${i+1}</span>${itemSvgFn(i)}</span>`).join('')}
+      </div>
+      <div class="big-num" id="big-num-${Date.now()}"></div>`;
+    document.body.appendChild(popup);
+    (async()=>{
+      await sleep(450);
+      const items=popup.querySelectorAll('.pop-item');
+      for(let i=0;i<items.length;i++){
+        if(i>0)items[i-1].classList.remove('counting');
+        items[i-1]?.classList.add('counted');
+        items[i].classList.add('counting');
+        playTone(440+i*80,0.15,'sine',0.3);
+        await speakCount(i+1,400);
+      }
+      items[items.length-1]?.classList.remove('counting');
+      items[items.length-1]?.classList.add('counted');
+      await sleep(250);
+      const big=popup.querySelector('.big-num');
+      big.innerHTML=`${count}<span class="unit">개</span>`;
+      big.classList.add('show');
+      sfxCheer();
+      if(APP_STATE.speakerOn)await speak(`모두 ${count}개예요`,{rate:0.95});
+      await sleep(1100);
+      popup.style.transition='opacity .4s, transform .4s';
+      popup.style.opacity='0';
+      popup.style.transform='translate(-50%,-50%) scale(.85)';
+      await sleep(420);
+      popup.remove();
+      resolve();
+    })();
+  });
+}
+
+// 양쪽 접시 카운팅 (가르기용) — 큰 수 자릿값 분기
+async function showSplitCountPopup(itemSvgFn,leftCount,rightCount,total){
+  return new Promise(resolve=>{
+    const popup=document.createElement('div');
+    popup.className='count-popup split-pop';
+    // 큰 수: 자릿값 시각화로 분리
+    if(total>20 || leftCount>20 || rightCount>20){
+      popup.innerHTML=`
+        <div class="pop-title">${total}${josaReul(total)} ${leftCount}${josaWa(leftCount)} ${rightCount}${josaRo(rightCount)} 갈랐어요</div>
+        <div style="display:flex;gap:14px;align-items:flex-start;justify-content:center;flex-wrap:wrap;margin:6px 0">
+          <div style="background:#fff;border:3px solid var(--split-deep);border-radius:14px;padding:10px 14px">
+            <div style="font-family:var(--font-display);font-size:16px;color:#666;margin-bottom:4px;text-align:center">왼쪽 ${leftCount}</div>
+            ${placeValueHtml(leftCount)}
+          </div>
+          <div style="font-family:var(--font-display);font-size:36px;color:var(--split-deep);align-self:center">+</div>
+          <div style="background:#fff;border:3px solid var(--split-deep);border-radius:14px;padding:10px 14px">
+            <div style="font-family:var(--font-display);font-size:16px;color:#666;margin-bottom:4px;text-align:center">오른쪽 ${rightCount}</div>
+            ${placeValueHtml(rightCount)}
+          </div>
+        </div>
+        <div class="big-num show" style="margin-top:8px">${leftCount} + ${rightCount} = ${total}</div>`;
+      document.body.appendChild(popup);
+      (async()=>{
+        await sleep(500);
+        sfxCheer();
+        if(APP_STATE.speakerOn)await speak(`${leftCount} 더하기 ${rightCount}${josaUn(rightCount)} ${total}`,{rate:0.95});
+        await sleep(1800);
+        popup.style.transition='opacity .4s, transform .4s';
+        popup.style.opacity='0';popup.style.transform='translate(-50%,-50%) scale(.85)';
+        await sleep(420);popup.remove();resolve();
+      })();
+      return;
+    }
+    // 작은 수: 기존 양쪽 객체 카운팅
+    popup.innerHTML=`
+      <div class="pop-title">${total}${josaReul(total)} ${leftCount}${josaWa(leftCount)} ${rightCount}${josaRo(rightCount)} 갈랐어요</div>
+      <div class="two-plates">
+        <div class="plate">
+          <div style="font-family:var(--font-display);font-size:18px;color:#888;margin-bottom:4px">왼쪽</div>
+          <div class="pop-items" id="left-items">
+            ${[...Array(leftCount)].map((_,i)=>`<span class="pop-item" data-i="${i}"><span class="num-tag" style="${i+1>10?'background:#FF8800;color:#fff;font-weight:bold;':''}">${i+1}</span>${itemSvgFn(i)}</span>`).join('')}
+          </div>
+          <div style="font-family:var(--font-display);font-size:48px;color:var(--split-deep);margin-top:6px">${leftCount}</div>
+        </div>
+        <div style="font-family:var(--font-display);font-size:48px;color:var(--split-deep);align-self:center">+</div>
+        <div class="plate">
+          <div style="font-family:var(--font-display);font-size:18px;color:#888;margin-bottom:4px">오른쪽</div>
+          <div class="pop-items" id="right-items">
+            ${[...Array(rightCount)].map((_,i)=>`<span class="pop-item" data-i="${i}"><span class="num-tag" style="${i+1>10?'background:#FF8800;color:#fff;font-weight:bold;':''}">${i+1}</span>${itemSvgFn(i)}</span>`).join('')}
+          </div>
+          <div style="font-family:var(--font-display);font-size:48px;color:var(--split-deep);margin-top:6px">${rightCount}</div>
+        </div>
+      </div>
+      <div class="big-num" style="margin-top:10px"></div>`;
+    document.body.appendChild(popup);
+    (async()=>{
+      await sleep(400);
+      // 왼쪽 카운트
+      const lefts=popup.querySelectorAll('#left-items .pop-item');
+      for(let i=0;i<lefts.length;i++){
+        if(i>0)lefts[i-1].classList.remove('counting');
+        lefts[i-1]?.classList.add('counted');
+        lefts[i].classList.add('counting');
+        playTone(440+i*80,0.15,'sine',0.3);
+        await speakCount(i+1,360);
+      }
+      lefts[lefts.length-1]?.classList.remove('counting');
+      lefts[lefts.length-1]?.classList.add('counted');
+      await sleep(300);
+      // 오른쪽 카운트
+      const rights=popup.querySelectorAll('#right-items .pop-item');
+      for(let i=0;i<rights.length;i++){
+        if(i>0)rights[i-1].classList.remove('counting');
+        rights[i-1]?.classList.add('counted');
+        rights[i].classList.add('counting');
+        playTone(440+i*80,0.15,'sine',0.3);
+        await speakCount(i+1,360);
+      }
+      rights[rights.length-1]?.classList.remove('counting');
+      rights[rights.length-1]?.classList.add('counted');
+      await sleep(300);
+      const big=popup.querySelector('.big-num');
+      big.innerHTML=`${leftCount} + ${rightCount} = ${total}`;
+      big.classList.add('show');
+      sfxCheer();
+      if(APP_STATE.speakerOn)await speak(`${leftCount} 더하기 ${rightCount}${josaUn(rightCount)} ${total}`,{rate:0.95});
+      await sleep(1300);
+      popup.style.transition='opacity .4s, transform .4s';
+      popup.style.opacity='0';
+      popup.style.transform='translate(-50%,-50%) scale(.85)';
+      await sleep(420);
+      popup.remove();
+      resolve();
+    })();
+  });
+}
+
+// ============================================
+// ✨ 헬퍼: 카운트 arena 만들기 (화면 가운데 박스)
+// ============================================
+function createArena(borderColor='#FFC23C',title='하나씩 세어 봐요'){
+  const arena=document.createElement('div');
+  arena.style.cssText=`position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.85);background:rgba(255,254,240,.98);border:6px solid ${borderColor};border-radius:24px;padding:22px 32px;z-index:1500;display:flex;flex-direction:column;align-items:center;gap:14px;min-width:380px;max-width:90vw;opacity:0;box-shadow:0 20px 60px rgba(0,0,0,.3);transition:opacity .35s,transform .35s`;
+  arena.innerHTML=`<div style="font-family:var(--font-display);font-size:24px;color:#666">${title}</div>`;
+  arena.classList.add('anim-temp');
+  document.body.appendChild(arena);
+  return arena;
+}
+function showArena(arena){arena.style.opacity='1';arena.style.transform='translate(-50%,-50%) scale(1)';}
+async function hideArena(arena){
+  arena.style.opacity='0';arena.style.transform='translate(-50%,-50%) scale(.85)';
+  await sleep(400);arena.remove();
+}
+
+// 슬롯(빈자리 + 번호 태그) 만들기
+function makeArenaSlots(parent,count,tagColor='#FFC23C'){
+  const slots=[];
+  for(let i=0;i<count;i++){
+    const sl=document.createElement('span');
+    sl.style.cssText='position:relative;display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px';
+    sl.innerHTML=`<span class="ar-num" style="position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-family:var(--font-display);font-size:20px;color:#fff;background:${tagColor};border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2);opacity:0;transition:opacity .2s">${i+1}</span>`;
+    parent.appendChild(sl);
+    slots.push(sl);
+  }
+  return slots;
+}
+
+// 원본 .obj 들을 ghost로 복제 + 슬롯 위치로 이동 (원본은 fade-out)
+function flyObjectsToSlots(objs,slotDivs){
+  const ghosts=[];
+  objs.forEach((obj,i)=>{
+    if(i>=slotDivs.length)return;
+    const oRect=obj.getBoundingClientRect();
+    const g=document.createElement('span');
+    g.style.cssText=`position:fixed;left:${oRect.left}px;top:${oRect.top}px;width:${oRect.width}px;height:${oRect.height}px;z-index:1600;pointer-events:none;transition:all .9s cubic-bezier(.5,0,.4,1) ${i*0.05}s;display:inline-block`;
+    g.innerHTML=obj.innerHTML;
+    g.classList.add('anim-temp');document.body.appendChild(g);
+    ghosts.push(g);
+    obj.style.transition='opacity .3s';
+    obj.style.opacity='0';
+  });
+  setTimeout(()=>{
+    ghosts.forEach((g,i)=>{
+      const sRect=slotDivs[i].getBoundingClientRect();
+      g.style.left=(sRect.left+sRect.width/2-g.offsetWidth/2)+'px';
+      g.style.top=(sRect.top+sRect.height/2-g.offsetHeight/2)+'px';
+    });
+  },30);
+  return ghosts;
+}
+
+// ghosts 차례차례 카운트 (시각 + 음 + 음성)
+async function countGhosts(ghosts,slotDivs){
+  for(let i=0;i<ghosts.length;i++){
+    if(i>0){ghosts[i-1].style.filter='';ghosts[i-1].style.transform='scale(1)';}
+    ghosts[i].style.transition='all .2s';
+    ghosts[i].style.filter='drop-shadow(0 0 14px #FFE600)';
+    ghosts[i].style.transform='scale(1.35)';
+    slotDivs[i].querySelector('.ar-num').style.opacity='1';
+    playTone(440+i*80,0.15,'sine',0.3);
+    await speakCount(i+1,420);
+  }
+  ghosts[ghosts.length-1].style.filter='';
+  ghosts[ghosts.length-1].style.transform='scale(1)';
+  await sleep(250);
+}
+
+// 빅 넘버 표시
+async function showArenaBigNum(arena,text,color){
+  const big=document.createElement('div');
+  big.style.cssText=`font-family:var(--font-display);font-size:80px;color:${color||'var(--gather-deep)'};opacity:0;transform:scale(.3);transition:all .5s cubic-bezier(.34,1.56,.64,1);line-height:1`;
+  big.innerHTML=text;
+  arena.appendChild(big);
+  await sleep(50);
+  big.style.opacity='1';big.style.transform='scale(1)';
+  sfxCheer();
+  await sleep(800);
+}
+
+// ============================================
+// ✨ 모션: 모으기 — 원본 객체가 그대로 arena로 날아가 카운팅
+// ============================================
+async function motionMergeObjects(root,svgFn,finalCount){
+  const boxes=root.querySelectorAll('.activity-canvas > .objects-box');
+  if(boxes.length<2)return;
+  // 1. 떨림
+  boxes.forEach(b=>b.classList.add('shake-prepare'));
+  await sleep(360);
+  boxes.forEach(b=>b.classList.remove('shake-prepare'));
+  // 2. arena 등장
+  const arena=createArena('#FFC23C','하나씩 세어 봐요');
+  const slotRow=document.createElement('div');
+  slotRow.style.cssText='display:flex;gap:14px;flex-wrap:wrap;justify-content:center;min-height:60px;padding:18px 14px;background:#FFFEF0;border-radius:14px;min-width:340px';
+  arena.appendChild(slotRow);
+  const slots=makeArenaSlots(slotRow,finalCount,'#FFC23C');
+  await sleep(40);showArena(arena);
+  await sleep(300);
+  // 3. 원본 .obj → ghost로 복제 + 슬롯으로 이동
+  const allObjs=[];
+  boxes.forEach(b=>allObjs.push(...b.querySelectorAll('.obj')));
+  const ghosts=flyObjectsToSlots(allObjs,slots);
+  await sleep(900+ghosts.length*50);
+  // 4. 차례차례 카운트
+  await countGhosts(ghosts,slots);
+  // 5. 빅 넘버
+  if(APP_STATE.speakerOn)speak(`모두 ${finalCount}개`,{rate:.95});
+  await showArenaBigNum(arena,`${finalCount}<span style="font-size:42px;color:#777">개</span>`);
+  await sleep(700);
+  // 6. ghost 사라짐 + arena 사라짐
+  ghosts.forEach(g=>{g.style.transition='opacity .4s, transform .4s';g.style.opacity='0';g.style.transform=(g.style.transform||'')+' scale(.3)';});
+  await hideArena(arena);
+  ghosts.forEach(g=>g.remove());
+  // 7. 답 슬롯 빵!
+  const target=document.getElementById('answer-slot');
+  if(target){
+    target.style.transition='transform .5s cubic-bezier(.34,1.56,.64,1)';
+    target.style.transform='scale(1.35)';
+    target.style.boxShadow='0 0 50px rgba(255,230,0,.9)';
+    await sleep(500);
+    target.style.transform='scale(1)';target.style.boxShadow='';
+  }
+  launchConfetti(20);
+}
+
+// ============================================
+// ✨ 모션: 가르기 — 원본 객체가 그대로 양쪽 arena 슬롯으로 → 양쪽 카운팅
+// ============================================
+async function motionSplitObjects(root,svgFn,halfCount){
+  const source=root.querySelectorAll('.objects-box')[0];
+  if(!source)return;
+  const total=source.querySelectorAll('.obj').length;
+  const rightCount=total-halfCount;
+  // 1. 진동
+  source.classList.add('shake-prepare');
+  await sleep(380);
+  source.classList.remove('shake-prepare');
+  const sRect=source.getBoundingClientRect();
+  createBurst(sRect.left+sRect.width/2,sRect.top+sRect.height/2,200);
+  await sleep(150);
+  // 2. arena (두 접시) 생성
+  const arena=createArena('#FF6FA8',`${total}${josaReul(total)} 두 묶음으로 갈라 봐요`);
+  const twoPlates=document.createElement('div');
+  twoPlates.style.cssText='display:flex;gap:24px;align-items:flex-start;justify-content:center';
+  arena.appendChild(twoPlates);
+  // 왼쪽 접시
+  const leftPlate=document.createElement('div');
+  leftPlate.style.cssText='text-align:center';
+  leftPlate.innerHTML=`<div style="font-family:var(--font-display);font-size:18px;color:#888;margin-bottom:4px">왼쪽</div>`;
+  const leftSlotRow=document.createElement('div');
+  leftSlotRow.style.cssText='display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:60px;padding:14px;background:#FFF5FA;border-radius:14px;min-width:140px';
+  leftPlate.appendChild(leftSlotRow);
+  const leftSlots=makeArenaSlots(leftSlotRow,halfCount,'#FF6FA8');
+  // 가운데 + 기호
+  const plusSign=document.createElement('div');
+  plusSign.style.cssText='font-family:var(--font-display);font-size:48px;color:var(--split-deep);align-self:center';
+  plusSign.textContent='+';
+  // 오른쪽 접시
+  const rightPlate=document.createElement('div');
+  rightPlate.style.cssText='text-align:center';
+  rightPlate.innerHTML=`<div style="font-family:var(--font-display);font-size:18px;color:#888;margin-bottom:4px">오른쪽</div>`;
+  const rightSlotRow=document.createElement('div');
+  rightSlotRow.style.cssText='display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:60px;padding:14px;background:#FFF5FA;border-radius:14px;min-width:140px';
+  rightPlate.appendChild(rightSlotRow);
+  const rightSlots=makeArenaSlots(rightSlotRow,rightCount,'#FF6FA8');
+  twoPlates.appendChild(leftPlate);
+  twoPlates.appendChild(plusSign);
+  twoPlates.appendChild(rightPlate);
+  await sleep(40);showArena(arena);
+  await sleep(300);
+  // 3. 원본 객체 → 양쪽 슬롯으로 ghost 이동
+  const allObjs=[...source.querySelectorAll('.obj')];
+  const ghosts=[];
+  allObjs.forEach((obj,i)=>{
+    const goLeft=i<halfCount;
+    const slotIdx=goLeft?i:(i-halfCount);
+    const slot=goLeft?leftSlots[slotIdx]:rightSlots[slotIdx];
+    if(!slot)return;
+    const oRect=obj.getBoundingClientRect();
+    const g=document.createElement('span');
+    g.style.cssText=`position:fixed;left:${oRect.left}px;top:${oRect.top}px;width:${oRect.width}px;height:${oRect.height}px;z-index:1600;pointer-events:none;transition:all 1.1s cubic-bezier(.4,0,.5,1) ${i*0.07}s;display:inline-block`;
+    g.innerHTML=obj.innerHTML;
+    g._targetSlot=slot;
+    g.classList.add('anim-temp');document.body.appendChild(g);
+    ghosts.push(g);
+    obj.style.transition='opacity .3s';
+    obj.style.opacity='0';
+  });
+  setTimeout(()=>{
+    ghosts.forEach((g,i)=>{
+      const sRect=g._targetSlot.getBoundingClientRect();
+      g.style.left=(sRect.left+sRect.width/2-g.offsetWidth/2)+'px';
+      g.style.top=(sRect.top+sRect.height/2-g.offsetHeight/2)+'px';
+    });
+  },30);
+  await sleep(1150+ghosts.length*70);
+  // 4. 왼쪽 카운트
+  const leftGhosts=ghosts.slice(0,halfCount);
+  if(leftGhosts.length>0) await countGhosts(leftGhosts,leftSlots);
+  // 5. 오른쪽 카운트
+  const rightGhosts=ghosts.slice(halfCount);
+  if(rightGhosts.length>0) await countGhosts(rightGhosts,rightSlots);
+  // 6. 빅 넘버 — "halfCount + rightCount = total"
+  if(APP_STATE.speakerOn)speak(`${halfCount} 더하기 ${rightCount}${josaUn(rightCount)} ${total}`,{rate:.95});
+  await showArenaBigNum(arena,`${halfCount} + ${rightCount} = ${total}`,'var(--split-deep)');
+  await sleep(900);
+  // 7. 사라짐
+  ghosts.forEach(g=>{g.style.transition='opacity .4s, transform .4s';g.style.opacity='0';g.style.transform=(g.style.transform||'')+' scale(.3)';});
+  await hideArena(arena);
+  ghosts.forEach(g=>g.remove());
+  // 8. 실제 양쪽 접시에 객체 채우기 (다음 화면 잠깐)
+  const lp=document.getElementById('left-plate'),rp=document.getElementById('right-plate');
+  if(lp&&rp){
+    lp.innerHTML=objsRow(svgFn,halfCount);
+    rp.innerHTML=objsRow(svgFn,rightCount);
+  }
+  await sleep(200);
+}
+
+// ============================================
+// ✨ 모션: 수 카드 두 개가 가운데로 합쳐짐 + 별 카운팅
+// ============================================
+async function motionMergeCards(root,aCount,bCount){
+  const finalCount = (bCount===undefined) ? aCount : (aCount+bCount);
+  const aN = (bCount===undefined) ? finalCount : aCount;
+  const tiles=[...root.querySelectorAll('.activity-canvas > .num-tile')].filter(t=>!t.classList.contains('target')&&!t.classList.contains('empty'));
+  const target=document.getElementById('answer-slot');
+  if(tiles.length<2||!target)return;
+  const tRect=target.getBoundingClientRect();
+  tiles.forEach(tile=>{
+    const oRect=tile.getBoundingClientRect();
+    const dx=(tRect.left+tRect.width/2)-(oRect.left+oRect.width/2);
+    const dy=(tRect.top+tRect.height/2)-(oRect.top+oRect.height/2);
+    tile.style.transition='transform 0.8s cubic-bezier(0.5,0,0.4,1), opacity 0.4s 0.5s';
+    tile.style.transform=`translate(${dx}px,${dy}px) scale(0.7)`;
+    tile.style.opacity='0';
+  });
+  setTimeout(()=>{target.style.boxShadow='0 0 40px rgba(255,230,0,0.8)';},600);
+  await sleep(950);
+  // 🆕 별 객체로 카운팅 — a개 빨강 + b개 파랑
+  if(finalCount){
+    const colorStar = (i)=> i<aN ? STAR_SVG('#E84545','#B71C1C') : STAR_SVG('#3A8DDE','#1565C0');
+    const title = (bCount!==undefined) ? `빨강 ${aN}개 + 파랑 ${bCount}개를 세어 봐요` : '함께 세어 봐요';
+    await showCountPopup(colorStar,finalCount,{title});
+  }
+  target.style.boxShadow='';
+}
+
+// ============================================
+// ✨ 모션: 수 카드 가르기 — total이 빛나며 a와 ?로 분리 + 별 카운팅
+// ============================================
+async function motionSplitCard(root,total,a,answer){
+  const targetCards=[...root.querySelectorAll('.num-tile.target')].filter(t=>!t.classList.contains('empty'));
+  const targetCard=targetCards[0];
+  if(!targetCard)return;
+  targetCard.style.transition='all 0.5s cubic-bezier(0.5,0,0.4,1)';
+  targetCard.style.boxShadow='0 0 40px rgba(255,230,0,0.9)';
+  targetCard.style.transform='scale(1.15)';
+  await sleep(450);
+  targetCard.style.transform='scale(1)';
+  const arrowEl=[...root.querySelectorAll('.activity-canvas > div')].find(d=>d.textContent&&d.textContent.includes('⇒'));
+  if(arrowEl){
+    arrowEl.style.transition='all 0.3s';
+    arrowEl.style.transform='scale(1.3)';
+    setTimeout(()=>arrowEl.style.transform='scale(1)',400);
+  }
+  await sleep(350);
+  targetCard.style.boxShadow='';
+  // 🆕 양쪽 카운팅 (가르기) - 하트 객체로
+  if(total&&a&&answer) await showSplitCountPopup(HEART_SVG,a,answer,total);
+}
+
+// ============================================
+// ✨ 모션: 옵션 카드가 빈 슬롯으로 날아감
+// ============================================
+async function flyCardToSlot(card,slot,val){
+  const cardRect=card.getBoundingClientRect();
+  const slotRect=slot.getBoundingClientRect();
+  const ghost=document.createElement('div');
+  ghost.style.cssText=`position:fixed;left:${cardRect.left}px;top:${cardRect.top}px;width:${cardRect.width}px;height:${cardRect.height}px;background:linear-gradient(180deg,#FFEC9E,#FFC23C);border:4px solid #B58200;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:46px;color:#4A2C0E;z-index:9999;transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;`;
+  ghost.textContent=val;
+  ghost.classList.add('anim-temp');document.body.appendChild(ghost);
+  card.style.visibility='hidden';
+  await sleep(20);
+  ghost.style.left=slotRect.left+'px';
+  ghost.style.top=slotRect.top+'px';
+  ghost.style.width=slotRect.width+'px';
+  ghost.style.height=slotRect.height+'px';
+  ghost.style.fontSize=Math.round(slotRect.width*0.5)+'px';
+  await sleep(620);
+  ghost.remove();
+  card.style.visibility='';
+  slot.classList.remove('empty','active');
+  slot.classList.add('filled');
+  slot.textContent=val;
+}
+
+// 분지 트리 완료 시 별 카운팅 (모으기 / 가르기 모두)
+async function showBranchCount(target,leftVal,rightVal,isGather){
+  if(isGather){
+    // leftVal + rightVal = target — 빨강 leftVal + 파랑 rightVal 색 분리
+    const colorStar = (i)=> i<leftVal ? STAR_SVG('#E84545','#B71C1C') : STAR_SVG('#3A8DDE','#1565C0');
+    await showCountPopup(colorStar,target,{title:`빨강 ${leftVal} + 파랑 ${rightVal}${josaReul(rightVal)} 모으면?`});
+  }else{
+    // target → leftVal + rightVal — 갈라서 카운트
+    await showSplitCountPopup(HEART_SVG,leftVal,rightVal,target);
+  }
+}
+
+// 모으기 그림
+function drawGatherSimple(root,q,inst){
+  const ans=q.a+q.b;
+  const svgFn=OBJECT_SVG[q.kind]||OBJECT_SVG[q.meta]||OBJECT_SVG.apple;  // 시트에서는 그림 이름이 메모 칸에 들어 있음
+  root.innerHTML=`
+    <div class="activity has-keypad">
+      <div class="instruction" id="instr-text">👉 모아서 몇 개?</div>
+      <div class="activity-canvas">
+        <div class="objects-box" style="background:linear-gradient(180deg,#FFF0F0,#FFE0E0);border-color:#FF6B6B">${objsRow(svgFn,q.a,'#E84545')}</div>
+        <div style="font-family:var(--font-display);font-size:70px;color:var(--gather-deep)">+</div>
+        <div class="objects-box" style="background:linear-gradient(180deg,#E8F4FF,#D6ECFF);border-color:#4A90E2">${objsRow(svgFn,q.b,'#3A8DDE')}</div>
+        <div style="font-family:var(--font-display);font-size:70px;color:var(--gather-deep)">=</div>
+        <div class="num-tile target empty input-active" id="answer-slot"><span class="cursor-blink"></span></div>
+      </div>
+      <div class="tutorial-hint">👇 키패드로 답을 눌러요</div>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech">두 묶음을 모아 봐!</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight('모아서 모두 몇 개?',document.getElementById('instr-text'));
+  setupKeypadCheck(ans,()=>motionMergeObjects(root,svgFn,ans));
+}
+async function onSimpleChoice(btn,val,answer,motionFn){
+  if(val===answer){
+    btn.classList.add('correct');
+    sfxCorrect();recordCorrect();
+    if(motionFn) await motionFn();
+    const slot=document.getElementById('answer-slot');
+    if(slot){slot.classList.remove('empty');slot.classList.add('correct-fill');slot.textContent=answer;}
+    setTimeout(()=>{showFeedback(true);setTimeout(nextActivity,900);},400);
+  }else{
+    btn.classList.add('wrong');recordWrong();
+    setTimeout(()=>btn.classList.remove('wrong'),600);
+    const sp=document.querySelector('.activity .speech');
+    if(sp)sp.textContent='아쉬워! 차근차근 세어 다시 골라 봐';
+  }
+}
+function drawCardSum(root,q){
+  const ans=q.a+q.b;
+  const tenBar = `<div style="display:grid;grid-template-columns:repeat(2,7px);grid-template-rows:repeat(5,7px);gap:1px;background:#1565C0;padding:2px;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.2)">${Array(10).fill('<div style="background:#90CAF9;border-radius:1px"></div>').join('')}</div>`;
+  const oneCube = (col,bcol)=>`<div style="width:14px;height:14px;background:radial-gradient(circle at 32% 32%,#fff 6%,${col} 70%);border:1.5px solid ${bcol};border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.2)"></div>`;
+  const renderMini=(n,col='#E53935',bcol='#B71C1C')=>{
+    const t=Math.floor(n/10), o=n%10;
+    return `<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;max-width:160px;min-height:36px;background:rgba(255,255,255,.7);padding:4px 8px;border-radius:8px">
+      ${t>0?`<div style="display:flex;gap:2px">${Array(t).fill(tenBar).join('')}</div>`:''}
+      ${t>0&&o>0?'<div style="color:#888;font-size:11px">·</div>':''}
+      ${o>0?`<div style="display:grid;grid-template-columns:repeat(5,14px);gap:2px;max-width:80px">${Array(o).fill(oneCube(col,bcol)).join('')}</div>`:''}
+    </div>`;
+  };
+  root.innerHTML=`
+    <div class="activity has-keypad">
+      <div class="instruction" id="instr-text">👉 <span class="t-num">${q.a}</span> <span class="t-op">+</span> <span class="t-num">${q.b}</span> <span class="t-op">=</span> <span class="t-rel">?</span></div>
+      <div style="display:flex;align-items:flex-start;gap:14px;justify-content:center;margin:8px 0">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div class="num-tile">${q.a}</div>
+          ${renderMini(q.a,'#E53935','#B71C1C')}
+        </div>
+        <div style="font-family:var(--font-display);font-size:50px;color:var(--gather-deep);margin-top:14px">＋</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div class="num-tile">${q.b}</div>
+          ${renderMini(q.b,'#3A8DDE','#1565C0')}
+        </div>
+        <div style="font-family:var(--font-display);font-size:50px;color:var(--gather-deep);margin-top:14px">＝</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div class="num-tile target empty input-active" id="answer-slot"><span class="cursor-blink"></span></div>
+          <div style="min-height:40px"></div>
+        </div>
+      </div>
+      <div class="tutorial-hint">👇 키패드로 답을 눌러요</div>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech">두 수를 모아 봐!</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight('두 수를 모아요',document.getElementById('instr-text'));
+  setupKeypadCheck(ans,()=>motionMergeCards(root,q.a,q.b));
+}
+
+// 분지 트리 — 여러 가지 모으기/가르기
+// ============================================
+// 🔍 새 활동: 짝꿍 한 수 찾기 (옵션 카드 중에서)
+// 한 수가 주어지고 나머지 한 수를 옵션 카드에서 고름
+// ============================================
+function drawFindPair(root,q,mode){
+  const target=q.target;
+  const a=q.a;
+  const ans=target-a;
+  // 옵션 카드 — 짝꿍 ans는 반드시 포함, 1~min(target-1, 9) 위주 + 노이즈
+  let opts=[];
+  if(target<=10){
+    for(let i=1;i<target;i++)opts.push(i);
+  } else if(target<=18){
+    for(let i=Math.max(1,target-9);i<=Math.min(target-1,9);i++)opts.push(i);
+  } else {
+    // 큰 수: 짝꿍 ans + 노이즈
+    opts=[ans, ans+1, ans-1, ans+2, Math.max(1,ans-2), 1, 2].filter(x=>x>0&&x<target);
+  }
+  if(opts.indexOf(ans)<0)opts.push(ans);
+  opts=shuffleArr(opts).slice(0,Math.min(opts.length,7));
+  if(opts.indexOf(ans)<0)opts[0]=ans;
+  opts=shuffleArr(opts);
+  const isGather=mode==='gather';
+  // 분지 트리 svg (모으기는 위→아래, 가르기는 아래→위)
+  const svg=isGather
+    ? `<svg class="tree-svg" viewBox="0 0 380 290" preserveAspectRatio="none"><path d="M60 100 L60 150 L320 150 L320 100" stroke="#FF6FA8" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M190 150 L190 220" stroke="#FF6FA8" stroke-width="6" fill="none" stroke-linecap="round"/><polygon points="190,250 175,225 205,225" fill="#FF6FA8"/></svg>`
+    : `<svg class="tree-svg" viewBox="0 0 380 290" preserveAspectRatio="none"><path d="M190 70 L190 130 L60 130 L60 170" stroke="#FF6FA8" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M190 130 L320 130 L320 170" stroke="#FF6FA8" stroke-width="6" fill="none" stroke-linecap="round"/><polygon points="60,200 45,175 75,175" fill="#FF6FA8"/><polygon points="320,200 305,175 335,175" fill="#FF6FA8"/></svg>`;
+  // 한 슬롯은 이미 채워짐, 한 슬롯은 비어있음 (위치 랜덤)
+  const leftFirst=Math.random()<0.5;
+  const filledSlot=`<div class="slot filled" data-fixed>${a}</div>`;
+  const emptySlot=`<div class="slot empty">?</div>`;
+  const slotsRow=`<div class="row" ${!isGather?'style="margin-top:30px"':''}>${leftFirst?filledSlot+emptySlot:emptySlot+filledSlot}</div>`;
+  const targetRow=`<div class="row" ${isGather?'style="margin-top:30px"':''}><div class="anchor"${!isGather?' style="background:linear-gradient(180deg,#FFB1D2,#FF6FA8);color:#fff;border-color:#C73874"':''}>${target}</div></div>`;
+  const treeRows=isGather?(slotsRow+targetRow):(targetRow+slotsRow);
+  root.innerHTML=`
+    <div class="activity">
+      <div class="instruction" id="instr-text">${isGather?`👉 <span class="t-num">${a}</span> <span class="t-op">+</span> <span class="t-rel">?</span> <span class="t-op">=</span> <span class="t-num">${target}</span>`:`👉 <span class="t-num">${target}</span> <span class="t-op">=</span> <span class="t-num">${a}</span> <span class="t-op">+</span> <span class="t-rel">?</span>`}</div>
+      <div class="activity-canvas" style="gap:60px">
+        <div class="branch-tree">${svg}${treeRows}</div>
+        <div class="option-panel">${opts.map(o=>`<div class="opt-card" data-val="${o}">${o}</div>`).join('')}</div>
+      </div>
+      <div class="tutorial-hint">👆 짝꿍 카드 → 빈칸 순서로 눌러요</div>
+      <div class="mascot-corner">${isGather?svgMoEum(110):svgNaNum(110)}</div>
+      <div class="speech">${isGather?`${a}${josaWa(a)} 모아서 ${target}? 짝꿍을 골라!`:`${target}${josaUn(target)} ${a}${josaWa(a)} 몇으로 가를까?`}</div>
+    </div>`;
+  speakWithHighlight(isGather?`${a}의 짝꿍 찾기`:`${target}${josaReul(target)} ${a}${josaWa(a)} 무엇으로`,document.getElementById('instr-text'));
+  setTimeout(()=>{if(APP_STATE.speakerOn&&root.isConnected)speak(`${a}${josaIrang(a)} 더해서 ${target}${josaIGa(target)} 되는 짝꿍 카드를 골라 봐.`,{rate:1.0,mode:'queue'});},1700);
+  bindFindPair(root,target,a,ans,isGather);
+}
+
+function bindFindPair(root,target,a,ans,isGather){
+  let selOpt=null,selSlot=null,isPlacing=false;
+  function clearOpt(){if(selOpt)selOpt.classList.remove('active');selOpt=null;}
+  function clearSlot(){if(selSlot)selSlot.classList.remove('active');selSlot=null;}
+  async function tryPlace(){
+    if(!selOpt||!selSlot||isPlacing)return;
+    const val=+selOpt.dataset.val;
+    if(val===ans){
+      isPlacing=true;
+      const card=selOpt,slot=selSlot;
+      selOpt=null;selSlot=null;
+      await flyCardToSlot(card,slot,val);
+      sfxCorrect();
+      isPlacing=false;
+      await sleep(400);
+      await showBranchCount(target,isGather?a:ans,isGather?ans:a,isGather);
+      recordCorrect();
+      setTimeout(()=>{showFeedback(true);setTimeout(nextActivity,800);},200);
+    }else{
+      recordWrong();
+      selSlot.classList.add('shake');
+      const sp=root.querySelector('.speech');
+      if(sp)sp.textContent=`${a}${josaIrang(a)} ${val}${josaReul(val)} 모으면 ${a+val}${josaIGa(a+val)} 돼. ${target}${josaIGa(target)} 되는 짝꿍은?`;
+      if(APP_STATE.speakerOn)speak(`다시 골라 봐`,{rate:1.1});
+      const s=selSlot,o=selOpt;
+      setTimeout(()=>{s.classList.remove('shake','active');o.classList.remove('active');},500);
+      selSlot=null;selOpt=null;
+    }
+  }
+  root.querySelectorAll('.opt-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      if(isPlacing)return;
+      clearOpt();selOpt=card;card.classList.add('active');
+      // 빈 슬롯이 하나뿐 — 자동 선택해서 바로 검증
+      const emptySlots=[...root.querySelectorAll('.slot.empty')].filter(s=>!s.classList.contains('filled'));
+      if(emptySlots.length===1&&!selSlot){
+        selSlot=emptySlots[0];
+        selSlot.classList.add('active');
+      }
+      tryPlace();
+    });
+  });
+  root.querySelectorAll('.slot').forEach(slot=>{
+    slot.addEventListener('click',()=>{
+      if(isPlacing||slot.classList.contains('filled')||slot.hasAttribute('data-fixed'))return;
+      clearSlot();selSlot=slot;slot.classList.add('active');tryPlace();
+    });
+  });
+}
+
+// ============================================
+// 🔗 선잇기 — 합이 target이 되는 두 수 짝짓기 (지도안 #10)
+// ============================================
+function drawConnectPairs(root,q){
+  const target=q.target;
+  // 짝꿍 후보 만들기
+  const pairs=[];
+  for(let i=1;i<target;i++){
+    if(i*2<=target&&i+i<=9&&target-i<=9){pairs.push([i,target-i]);}
+    else if(target-i>=1&&target-i<=9&&i<=9&&i<target-i){pairs.push([i,target-i]);}
+  }
+  // 짝 2~3쌍 선택
+  const shuffledP=shuffleArr(pairs);
+  const usedPairs=shuffledP.slice(0,Math.min(3,pairs.length));
+  let leftArr=usedPairs.map(p=>p[0]);
+  let rightArr=usedPairs.map(p=>p[1]);
+  // 노이즈 추가 (한쪽에 1개씩, 짝 없는 수)
+  const usedNums=new Set();
+  usedPairs.forEach(p=>{usedNums.add(p[0]);usedNums.add(p[1]);});
+  for(let i=1;i<=9;i++){
+    if(!usedNums.has(i)&&leftArr.length<4){leftArr.push(i);break;}
+  }
+  for(let i=1;i<=9;i++){
+    if(!usedNums.has(i)&&rightArr.length<4&&!leftArr.includes(i)){rightArr.push(i);break;}
+  }
+  leftArr=shuffleArr(leftArr);
+  rightArr=shuffleArr(rightArr);
+  // 색상 팔레트 — 짝 매칭 표시용
+  const colors=['#FFE066','#A8E0FF','#FFB1D2','#B0F0A0','#C4A8FF'];
+  root.innerHTML=`
+    <div class="activity gather">
+      <div class="instruction" id="instr-text">🔗 <span class="t-rel">합</span>이 <span class="t-num">${target}</span>인 두 수 짝짓기</div>
+      <div class="activity-canvas" style="gap:60px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          ${leftArr.map((v,i)=>`<div class="conn-card" data-side="L" data-val="${v}" data-idx="${i}">${v}</div>`).join('')}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--font-display);font-size:28px;color:var(--gather-deep)">
+          <div style="font-size:48px">🤝</div>
+          <div>= ${target}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          ${rightArr.map((v,i)=>`<div class="conn-card" data-side="R" data-val="${v}" data-idx="${i}">${v}</div>`).join('')}
+        </div>
+      </div>
+      <div class="tutorial-hint">👆 왼쪽 카드 → 오른쪽 카드 — 짝꿍 ${usedPairs.length}쌍 모두 찾기!</div>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech">합이 ${target}${josaIGa(target)} 되는 두 수를 골라 봐!</div>
+    </div>`;
+  speakWithHighlight(`합이 ${target}${josaIGa(target)} 되는 두 수 짝짓기`,document.getElementById('instr-text'));
+  bindConnectPairs(root,target,usedPairs.length,colors);
+}
+
+function bindConnectPairs(root,target,needed,colors){
+  let selLeft=null;
+  let matched=0;
+  function clearSel(){
+    root.querySelectorAll('.conn-card.sel').forEach(c=>c.classList.remove('sel'));
+    selLeft=null;
+  }
+  root.querySelectorAll('.conn-card[data-side="L"]').forEach(card=>{
+    card.addEventListener('click',()=>{
+      if(card.classList.contains('matched'))return;
+      clearSel();
+      selLeft=card;
+      card.classList.add('sel');
+    });
+  });
+  root.querySelectorAll('.conn-card[data-side="R"]').forEach(card=>{
+    card.addEventListener('click',async()=>{
+      if(card.classList.contains('matched')||!selLeft)return;
+      const lv=+selLeft.dataset.val,rv=+card.dataset.val;
+      if(lv+rv===target){
+        sfxCorrect();
+        const l=selLeft,r=card;
+        const color=colors[matched%colors.length];
+        l.style.background=color;
+        r.style.background=color;
+        l.style.borderColor=color;
+        r.style.borderColor=color;
+        l.classList.add('matched');
+        r.classList.add('matched');
+        l.classList.remove('sel');
+        matched++;
+        selLeft=null;
+        const sp=root.querySelector('.speech');
+        if(sp)sp.textContent=`${lv} + ${rv} = ${target} ✨ (${matched}/${needed}쌍)`;
+        if(matched>=needed){
+          await sleep(700);
+          sfxCheer();
+          recordCorrect();
+          showFeedback(true);
+          setTimeout(nextActivity,1000);
+        }
+      } else {
+        recordWrong();
+        card.classList.add('shake');
+        const sp=root.querySelector('.speech');
+        if(sp)sp.textContent=`${lv} + ${rv} = ${lv+rv} (${target}${josaIGa(target)} 아니야)`;
+        const _l=selLeft; selLeft=null;
+        setTimeout(()=>{card.classList.remove('shake');if(_l)_l.classList.remove('sel');},600);
+      }
+    });
+  });
+}
+
+// ============================================
+// ✅ 식 고르기 — 합이 target인 식을 모두 고르기 (지도안 #11)
+// ============================================
+function drawChooseEquation(root,q){
+  const target=q.target;
+  // 합이 target인 식 — 모두 가능한 조합
+  const correctEqs=[];
+  for(let a=1;a<target;a++){
+    const b=target-a;
+    if(b>=1&&b<=9&&a<=9){correctEqs.push({a,b,sum:target});}
+  }
+  // 합이 다른 식 (오답)
+  const wrongEqs=[];
+  for(let a=1;a<=9;a++){
+    for(let b=1;b<=9;b++){
+      if(a+b!==target&&Math.abs(a+b-target)<=3){
+        wrongEqs.push({a,b,sum:a+b});
+      }
+    }
+  }
+  // 정답 3개 + 오답 5개 (또는 가능한 한)
+  const corrPick=shuffleArr(correctEqs).slice(0,Math.min(3,correctEqs.length));
+  const wrongPick=shuffleArr(wrongEqs).slice(0,Math.max(3,8-corrPick.length));
+  const all=shuffleArr([...corrPick,...wrongPick]);
+  root.innerHTML=`
+    <div class="activity gather">
+      <div class="instruction" id="instr-text">✅ <span class="t-rel">합</span>이 <span class="t-num">${target}</span>인 식 모두 고르기</div>
+      <div class="activity-canvas" style="flex-wrap:wrap;gap:14px;max-width:580px;justify-content:center">
+        ${all.map(e=>`<div class="eq-card" data-correct="${e.sum===target?'1':'0'}" style="background:#fff;border:3px solid var(--gather-deep);border-radius:14px;padding:14px 20px;font-family:var(--font-display);font-size:28px;color:var(--gather-deep);cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.1);transition:all .2s">${e.a} + ${e.b}</div>`).join('')}
+      </div>
+      <button id="eq-check-btn" style="margin-top:14px;background:var(--gather-deep);color:#fff;font-family:var(--font-display);font-size:22px;padding:14px 38px;border:none;border-radius:18px;cursor:pointer;box-shadow:0 6px 0 var(--gather-shadow,#888);font-weight:bold">확인하기 ✓</button>
+      <div class="tutorial-hint">👆 합이 ${target}인 식 ${corrPick.length}개 — 모두 골라 ✓ 누르기</div>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech">합이 ${target}인 식은 어떤 것?</div>
+    </div>`;
+  speakWithHighlight(`합이 ${target}인 식 모두 고르기`,document.getElementById('instr-text'));
+  bindChooseEquation(root,target,corrPick.length);
+}
+
+function bindChooseEquation(root,target,needed){
+  root.querySelectorAll('.eq-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      if(card.classList.contains('locked'))return;
+      const isSel=card.classList.toggle('selected');
+      if(isSel){
+        card.style.background='#FFE066';
+        card.style.transform='translateY(-3px) scale(1.03)';
+        card.style.boxShadow='0 6px 14px rgba(255,193,7,.4)';
+      } else {
+        card.style.background='#fff';
+        card.style.transform='';
+        card.style.boxShadow='0 3px 6px rgba(0,0,0,.1)';
+      }
+    });
+  });
+  let _eqDone=false;
+  document.getElementById('eq-check-btn').addEventListener('click',()=>{
+    if(_eqDone)return;
+    const selected=[...root.querySelectorAll('.eq-card.selected')];
+    let correctSelections=0;
+    let wrongSelections=0;
+    selected.forEach(c=>{
+      if(c.dataset.correct==='1')correctSelections++;
+      else wrongSelections++;
+    });
+    const sp=root.querySelector('.speech');
+    if(correctSelections===needed&&wrongSelections===0){
+      // 모두 정답
+      _eqDone=true;
+      document.getElementById('eq-check-btn').disabled=true;
+      sfxCheer();
+      recordCorrect();
+      selected.forEach(c=>{c.classList.add('locked');c.style.background='#B0F0A0';});
+      if(sp)sp.textContent=`정답! ${needed}개 모두 찾았어!`;
+      setTimeout(()=>{showFeedback(true);setTimeout(nextActivity,1000);},800);
+    } else {
+      recordWrong();
+      if(sp)sp.textContent=`합이 ${target}인 식 ${needed}개를 정확히 골라야 해. 다시 살펴봐!`;
+      // 잘못 선택한 것 표시
+      selected.forEach(c=>{
+        if(c.dataset.correct!=='1'){
+          c.classList.add('shake');
+          c.style.background='#FFB4B4';
+          setTimeout(()=>{
+            c.classList.remove('selected','shake');
+            c.style.background='#fff';
+            c.style.transform='';
+            c.style.boxShadow='0 3px 6px rgba(0,0,0,.1)';
+          },1000);
+        }
+      });
+    }
+  });
+}
+
+// ============================================
+// 🟦 새 활동: 10판으로 받아올림 (a + b = 십몇)
+// 일 모형 10개 채워지면 → 십 모형 1개로 변신, 남은 일 모형 표시
+// ============================================
+function drawTenFrameCarry(root,q){
+  const a=q.a, b=q.b, total=a+b;
+  const headerBg=`linear-gradient(180deg,var(--gather-bg-1),var(--gather-bg-2))`;
+  // 10판 + 추가 일 모형 시각화 (a, a+1, ..., a+b 단계로 표시)
+  const cells = [];
+  for(let i=0;i<10;i++){
+    const isA = i<a;                              // 첫 수 (빨강)
+    const isB = i>=a && i<Math.min(a+b,10);       // 둘째 수에서 채운 부분 (파랑)
+    const filled = isA||isB;
+    cells.push(`<div class="tfc-cell" data-i="${i}" style="width:48px;height:48px;border:3px solid var(--gather-deep);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,.1)">${filled?`<div style="width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 32%,#fff 6%,${isA?'#E84545':'#3A8DDE'} 70%);border:2px solid ${isA?'#B71C1C':'#1565C0'};box-shadow:0 2px 4px rgba(0,0,0,.2)"></div>`:''}</div>`);
+  }
+  const extras = (a+b>10) ? Array.from({length:total-10},(_,i)=>`<div class="tfc-extra" data-i="${i}" style="width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center"><div style="width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 32%,#fff 6%,#3A8DDE 70%);border:2.5px solid #1565C0;box-shadow:0 2px 4px rgba(0,0,0,.2)"></div></div>`).join('') : '';
+  root.innerHTML=`
+    <div class="activity has-keypad" style="background:${headerBg}">
+      <div class="instruction" id="instr-text">👉 <span class="t-num">${a}</span> <span class="t-op">+</span> <span class="t-num">${b}</span> — <span class="t-op">받아올림</span>!</div>
+      <div class="activity-canvas" style="flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center">
+          <div style="display:grid;grid-template-columns:repeat(5,48px);gap:6px;padding:10px;background:rgba(255,255,255,.7);border:3px solid var(--gather-deep);border-radius:14px">${cells.join('')}</div>
+          ${extras?`<div style="font-family:var(--font-display);font-size:38px;color:var(--gather-deep)">+</div><div style="display:flex;gap:6px;padding:10px;background:rgba(255,255,255,.5);border:3px dashed var(--gather-deep);border-radius:14px">${extras}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:4px">
+          <div class="num-tile">${a}</div>
+          <div style="font-family:var(--font-display);font-size:50px;color:var(--gather-deep)">＋</div>
+          <div class="num-tile">${b}</div>
+          <div style="font-family:var(--font-display);font-size:50px;color:var(--gather-deep)">＝</div>
+          <div class="num-tile target empty input-active" id="answer-slot"><span class="cursor-blink"></span></div>
+        </div>
+      </div>
+      ${a+b>10?`<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0;padding:8px 14px;background:rgba(255,255,255,.85);border-radius:12px;font-family:var(--font-display);font-size:18px;color:var(--gather-deep);flex-wrap:wrap;max-width:600px">
+          <span>💡</span>
+          <span class="t-num" style="color:#E84545">${a}</span>
+          <span>+</span>
+          <span class="t-num" style="color:#3A8DDE">${10-a}</span>
+          <span style="color:#4CAF50;font-weight:bold">=10</span>
+          <span style="margin:0 4px">,</span>
+          <span style="color:#4CAF50;font-weight:bold">10</span>
+          <span>+</span>
+          <span class="t-num" style="color:#3A8DDE">${b-(10-a)}</span>
+          <span>=</span>
+          <span class="t-num" style="color:#FF8800">${a+b}</span>
+        </div>`:''}
+        <div class="tutorial-hint">👇 10판 + 남은 동그라미를 모두 세어서 입력!</div>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech">10판 가득 채우면 십 1개! 남은 동그라미가 일의 자리야</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight(`${a} 더하기 ${b}`,document.getElementById('instr-text'));
+  setupKeypadCheck(total,()=>motionTenFrameCarry(root,a,b,total));
+}
+
+async function motionTenFrameCarry(root,a,b,total){
+  // 모션: 10판 가득 채워지면 반짝 → 십 모형 변신 + 남은 일 표시
+  const arena=document.createElement('div');
+  arena.className='count-popup';
+  arena.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.3);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);z-index:200;background:#fff;border:5px solid var(--gather-deep);border-radius:24px;padding:24px 28px;box-shadow:0 14px 30px rgba(0,0,0,.3);max-width:560px';
+  const tens=Math.floor(total/10), ones=total%10;
+  arena.innerHTML=`
+    <div style="font-family:var(--font-display);font-size:26px;color:var(--gather-deep);text-align:center;margin-bottom:10px">🌟 10판 가득! 받아올림 ${tens}!</div>
+    <div style="display:flex;align-items:center;gap:18px;justify-content:center;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="display:grid;grid-template-columns:repeat(2,18px);grid-template-rows:repeat(5,18px);gap:2px;background:var(--gather-deep);padding:4px;border-radius:6px;box-shadow:0 0 18px rgba(255,230,0,.7)">${Array(10).fill('<div style="background:#FFE066;border-radius:3px"></div>').join('')}</div>
+        <div style="font-family:var(--font-display);font-size:20px;color:var(--gather-deep)">십 ${tens}개</div>
+      </div>
+      ${ones>0?`<div style="font-family:var(--font-display);font-size:38px;color:#666">+</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:180px">${Array.from({length:ones},()=>`<div style="width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 32% 32%,#fff 6%,var(--gather-accent) 70%);box-shadow:0 2px 4px rgba(0,0,0,.25)"></div>`).join('')}</div>
+        <div style="font-family:var(--font-display);font-size:20px;color:var(--gather-deep)">일 ${ones}개</div>
+      </div>`:''}
+    </div>
+    <div style="font-family:var(--font-display);font-size:38px;color:#222;text-align:center;margin-top:14px">${a} + ${b} = <span style="color:var(--gather-deep);font-size:48px">${total}</span></div>
+  `;
+  root.appendChild(arena);
+  await sleep(50);
+  arena.style.opacity='1';
+  arena.style.transform='translate(-50%,-50%) scale(1)';
+  sfxCheer();
+  if(APP_STATE.speakerOn)speak(`${a} 더하기 ${b}${josaUn(b)} ${total}`,{rate:.95});
+  await sleep(2000);
+  arena.style.opacity='0';
+  arena.style.transform='translate(-50%,-50%) scale(.3)';
+  await sleep(400);
+  arena.remove();
+}
+
+// ============================================
+// 🟧 새 활동: 10판으로 받아내림 (십몇 - 몇 = 몇)
+// 10판 + 일 모형 → 일 부족하면 십 모형 1개 풀어서 일 10개로 + 빼고 남기
+// ============================================
+function drawTenFrameBorrow(root,q){
+  const total=q.target, b=q.a, ans=total-b;  // total - b = ans
+  const headerBg=`linear-gradient(180deg,var(--split-bg-1),var(--split-bg-2))`;
+  const initOnes = total%10;
+  const initTens = Math.floor(total/10);
+  // 시각화: 십 1개(10판) + 일 (total-10)개
+  root.innerHTML=`
+    <div class="activity has-keypad" style="background:${headerBg}">
+      <div class="instruction" id="instr-text">👉 <span class="t-num">${total}</span> <span class="t-op">-</span> <span class="t-num">${b}</span> — <span class="t-op">받아내림</span>!</div>
+      <div class="activity-canvas" style="flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center">
+          <div style="display:grid;grid-template-columns:repeat(5,48px);gap:6px;padding:10px;background:rgba(255,255,255,.7);border:3px solid var(--split-deep);border-radius:14px">${Array(10).fill('').map(()=>`<div style="width:48px;height:48px;border:3px solid var(--split-deep);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center"><div style="width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 32%,#fff 6%,var(--split-accent) 70%);box-shadow:0 2px 4px rgba(0,0,0,.2)"></div></div>`).join('')}</div>
+          ${initOnes>0?`<div style="font-family:var(--font-display);font-size:38px;color:var(--split-deep)">+</div><div style="display:flex;gap:6px;padding:10px;background:rgba(255,255,255,.5);border:3px solid var(--split-deep);border-radius:14px">${Array.from({length:initOnes},()=>`<div style="width:48px;height:48px;border:3px solid var(--split-deep);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center"><div style="width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 32%,#fff 6%,var(--split-accent) 70%);box-shadow:0 2px 4px rgba(0,0,0,.2)"></div></div>`).join('')}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="num-tile">${total}</div>
+          <div style="font-family:var(--font-display);font-size:50px;color:var(--split-deep)">－</div>
+          <div class="num-tile">${b}</div>
+          <div style="font-family:var(--font-display);font-size:50px;color:var(--split-deep)">＝</div>
+          <div class="num-tile target empty input-active" id="answer-slot"><span class="cursor-blink"></span></div>
+        </div>
+      </div>
+      <div class="tutorial-hint">👇 ${b}개를 빼고 남은 동그라미를 세어 봐!</div>
+      <div class="mascot-corner">${svgNaNum(110)}</div>
+      <div class="speech">일이 부족하면 십 1개를 풀어서 일 10개로 바꿔!</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight(`${total} 빼기 ${b}`,document.getElementById('instr-text'));
+  setupKeypadCheck(ans,()=>motionTenFrameBorrow(root,total,b,ans));
+}
+
+async function motionTenFrameBorrow(root,total,b,ans){
+  const arena=document.createElement('div');
+  arena.className='count-popup';
+  arena.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.3);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);z-index:200;background:#fff;border:5px solid var(--split-deep);border-radius:24px;padding:24px 28px;box-shadow:0 14px 30px rgba(0,0,0,.3);max-width:560px';
+  const tens=Math.floor(ans/10), ones=ans%10;
+  arena.innerHTML=`
+    <div style="font-family:var(--font-display);font-size:26px;color:var(--split-deep);text-align:center;margin-bottom:10px">🌿 십 1개를 풀어 일 10개로!</div>
+    <div style="display:flex;align-items:center;gap:18px;justify-content:center;flex-wrap:wrap">
+      ${tens>0?`<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="display:grid;grid-template-columns:repeat(2,18px);grid-template-rows:repeat(5,18px);gap:2px;background:var(--split-deep);padding:4px;border-radius:6px">${Array(10).fill('<div style="background:#A8C8F0;border-radius:3px"></div>').join('')}</div>
+        <div style="font-family:var(--font-display);font-size:20px;color:var(--split-deep)">십 ${tens}개</div>
+      </div>${ones>0?'<div style="font-family:var(--font-display);font-size:38px;color:#666">+</div>':''}`:''}
+      ${ones>0?`<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:180px">${Array.from({length:ones},()=>`<div style="width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 32% 32%,#fff 6%,var(--split-accent) 70%);box-shadow:0 2px 4px rgba(0,0,0,.25)"></div>`).join('')}</div>
+        <div style="font-family:var(--font-display);font-size:20px;color:var(--split-deep)">일 ${ones}개</div>
+      </div>`:''}
+    </div>
+    <div style="font-family:var(--font-display);font-size:38px;color:#222;text-align:center;margin-top:14px">${total} - ${b} = <span style="color:var(--split-deep);font-size:48px">${ans}</span></div>
+  `;
+  root.appendChild(arena);
+  await sleep(50);
+  arena.style.opacity='1';
+  arena.style.transform='translate(-50%,-50%) scale(1)';
+  sfxCheer();
+  if(APP_STATE.speakerOn)speak(`${total} 빼기 ${b}${josaUn(b)} ${ans}`,{rate:.95});
+  await sleep(2000);
+  arena.style.opacity='0';
+  arena.style.transform='translate(-50%,-50%) scale(.3)';
+  await sleep(400);
+  arena.remove();
+}
+
+// ============================================
+// 🎭 새 활동: 자릿값 세로셈 덧셈 (빨간 커튼 무대)
+// 일의 자리 합 → 10 넘으면 자릿값 1이 *십의 자리로 점프*
+// ============================================
+function drawVerticalAdd(root,q){
+  const a=q.a, b=q.b, total=a+b;
+  const aT=Math.floor(a/10), aO=a%10;
+  const bT=Math.floor(b/10), bO=b%10;
+  const oneSum=aO+bO;
+  const carry=oneSum>=10?1:0;
+  root.innerHTML=`
+    <div class="activity has-keypad" style="background:linear-gradient(180deg,#7A1F1F,#3A0E0E)">
+      <div class="instruction" id="instr-text" style="background:rgba(255,255,255,.95)">🎭 <span class="t-op">세로셈</span> — <span class="t-num">${a}</span> <span class="t-op">+</span> <span class="t-num">${b}</span></div>
+      <div class="activity-canvas" style="flex-direction:column;gap:10px;background:rgba(0,0,0,.2);border:5px solid #FFE066;border-radius:20px;padding:24px 36px;box-shadow:0 0 30px rgba(255,230,0,.4) inset">
+        <div style="display:grid;grid-template-columns:60px 60px;gap:10px;font-family:var(--font-display);font-size:54px;color:#fff;text-align:center;align-items:center;justify-content:center">
+          <div></div><div style="color:#FFE066;font-size:24px;margin-bottom:-4px">${carry?carry:''}</div>
+          <div>${aT||''}</div><div>${aO}</div>
+          <div style="font-size:36px">＋</div><div></div>
+          <div>${bT||''}</div><div>${bO}</div>
+          <div colspan="2" style="grid-column:1/3;border-top:3px solid #FFE066;padding-top:6px"></div>
+          <div id="ans-tens" class="num-tile target empty input-active" style="width:60px;height:80px;font-size:46px">?</div>
+          <div id="ans-ones" class="num-tile target empty" style="width:60px;height:80px;font-size:46px">?</div>
+        </div>
+        <div style="color:#FFE066;font-family:var(--font-display);font-size:18px;text-align:center;margin-top:10px">${carry?'🎯 일끼리 더하니 10이 넘어 → 받아올림 1을 십의 자리로!':'🎯 일끼리 십끼리 같은 자리끼리!'}</div>
+      </div>
+      <div class="tutorial-hint">👇 ${total>=10?'십의 자리부터':'답을'} 입력</div>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech">${carry?`일끼리 ${aO}+${bO}=${oneSum}, 받아올림 1!`:`자릿값 맞춰 더해 봐!`}</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight(`${a} 더하기 ${b}`,document.getElementById('instr-text'));
+  setupKeypadCheck(total,()=>motionVerticalAdd(root,a,b,total,carry));
+}
+
+async function motionVerticalAdd(root,a,b,total,carry){
+  const arena=document.createElement('div');
+  arena.className='count-popup';
+  arena.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.3);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);z-index:200;background:linear-gradient(180deg,#7A1F1F,#3A0E0E);border:5px solid #FFE066;border-radius:24px;padding:24px 36px;box-shadow:0 14px 30px rgba(0,0,0,.5);color:#fff;max-width:560px';
+  arena.innerHTML=`
+    <div style="font-family:var(--font-display);font-size:28px;color:#FFE066;text-align:center;margin-bottom:12px">🎭 ${carry?'받아올림 1이 십의 자리로!':'자릿값 맞춰 더했어!'}</div>
+    <div style="font-family:var(--font-display);font-size:50px;text-align:center">${a} + ${b} = <span style="color:#FFE066;font-size:64px">${total}</span></div>
+    ${carry?`<div style="font-family:var(--font-display);font-size:18px;text-align:center;color:#FFC4C4;margin-top:8px">일의 자리에서 10을 만들어 십의 자리로 ↗</div>`:''}
+  `;
+  root.appendChild(arena);
+  await sleep(50);
+  arena.style.opacity='1';
+  arena.style.transform='translate(-50%,-50%) scale(1)';
+  sfxCheer();
+  if(APP_STATE.speakerOn)speak(`${a} 더하기 ${b}${josaUn(b)} ${total}`,{rate:.95});
+  await sleep(2000);
+  arena.style.opacity='0';
+  arena.style.transform='translate(-50%,-50%) scale(.3)';
+  await sleep(400);
+  arena.remove();
+}
+
+// ============================================
+// 🎭 새 활동: 자릿값 세로셈 뺄셈 (받아내림 10)
+// ============================================
+function drawVerticalSub(root,q){
+  const total=q.target, b=q.a, ans=total-b;
+  const tT=Math.floor(total/10), tO=total%10;
+  const bT=Math.floor(b/10), bO=b%10;
+  const borrow=tO<bO?1:0;
+  root.innerHTML=`
+    <div class="activity has-keypad" style="background:linear-gradient(180deg,#7A1F4A,#3A0E2A)">
+      <div class="instruction" id="instr-text" style="background:rgba(255,255,255,.95)">🎭 <span class="t-op">세로셈</span> — <span class="t-num">${total}</span> <span class="t-op">-</span> <span class="t-num">${b}</span></div>
+      <div class="activity-canvas" style="flex-direction:column;gap:10px;background:rgba(0,0,0,.2);border:5px solid #FF9DCC;border-radius:20px;padding:24px 36px;box-shadow:0 0 30px rgba(255,150,200,.4) inset">
+        <div style="display:grid;grid-template-columns:60px 60px;gap:10px;font-family:var(--font-display);font-size:54px;color:#fff;text-align:center;align-items:center;justify-content:center">
+          ${borrow?`<div style="color:#FFC4E3;font-size:24px;text-decoration:line-through">${tT}</div><div style="color:#FFC4E3;font-size:24px">${tO+10}</div>`:`<div></div><div></div>`}
+          <div>${tT||''}</div><div>${tO}</div>
+          <div style="font-size:36px">－</div><div></div>
+          <div>${bT||''}</div><div>${bO}</div>
+          <div colspan="2" style="grid-column:1/3;border-top:3px solid #FF9DCC;padding-top:6px"></div>
+          <div id="ans-tens" class="num-tile target empty input-active" style="width:60px;height:80px;font-size:46px">?</div>
+          <div id="ans-ones" class="num-tile target empty" style="width:60px;height:80px;font-size:46px">?</div>
+        </div>
+        <div style="color:#FFC4E3;font-family:var(--font-display);font-size:18px;text-align:center;margin-top:10px">${borrow?'🎯 일이 부족하면 → 십에서 10을 빌려와!':'🎯 일끼리 십끼리 같은 자리끼리!'}</div>
+      </div>
+      <div class="tutorial-hint">👇 답을 입력 (두 자리 답이면 두 번)</div>
+      <div class="mascot-corner">${svgNaNum(110)}</div>
+      <div class="speech">${borrow?`일이 부족! 십에서 10 빌려와`:`자릿값 맞춰 빼 봐!`}</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight(`${total} 빼기 ${b}`,document.getElementById('instr-text'));
+  setupKeypadCheck(ans,()=>motionVerticalSub(root,total,b,ans,borrow));
+}
+
+async function motionVerticalSub(root,total,b,ans,borrow){
+  const arena=document.createElement('div');
+  arena.className='count-popup';
+  arena.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.3);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);z-index:200;background:linear-gradient(180deg,#7A1F4A,#3A0E2A);border:5px solid #FF9DCC;border-radius:24px;padding:24px 36px;box-shadow:0 14px 30px rgba(0,0,0,.5);color:#fff;max-width:560px';
+  arena.innerHTML=`
+    <div style="font-family:var(--font-display);font-size:28px;color:#FFC4E3;text-align:center;margin-bottom:12px">🎭 ${borrow?'십 1개 풀어 일 10개 빌려옴!':'자릿값 맞춰 뺐어!'}</div>
+    <div style="font-family:var(--font-display);font-size:50px;text-align:center">${total} - ${b} = <span style="color:#FFC4E3;font-size:64px">${ans}</span></div>
+    ${borrow?`<div style="font-family:var(--font-display);font-size:18px;text-align:center;color:#FFC4E3;margin-top:8px">십에서 10이 풀려 일의 자리로 ↘</div>`:''}
+  `;
+  root.appendChild(arena);
+  await sleep(50);
+  arena.style.opacity='1';
+  arena.style.transform='translate(-50%,-50%) scale(1)';
+  sfxCheer();
+  if(APP_STATE.speakerOn)speak(`${total} 빼기 ${b}${josaUn(b)} ${ans}`,{rate:.95});
+  await sleep(2000);
+  arena.style.opacity='0';
+  arena.style.transform='translate(-50%,-50%) scale(.3)';
+  await sleep(400);
+  arena.remove();
+}
+
+// ============================================
+// 🎯 차근차근 도전 (Speed Round) — 시간 제한 없이 5문제 연속
+// 가벼운 별점 효과, 등급/순위 X
+// ============================================
+// ============================================
+// 🎯 차근차근 도전 — 저학년 친화 (천천히 정확하게, 정답률 칭호, 오답 다시 풀기)
+// 곱셈 앱 패턴 참고: 진행 바, 문항 수 선택, 오답 복습, 결과 칭호
+// 1학년 적응: 시간 제한 제거, 보라색 → 노랑·남색, 등급 느낌 없는 응원 칭호
+// ============================================
+function drawSpeedRound(root,q){
+  // 첫 진입 — 문항 수 선택
+  if (!APP_STATE._speedState) {
+    showSpeedSelect(root);
+    return;
+  }
+  const st = APP_STATE._speedState;
+  // 종료 처리
+  if (st.idx >= st.queue.length) {
+    if (st.wrongs.length > 0 && !st.reviewing) {
+      st.reviewing = true;
+      st.queue = st.wrongs.slice();
+      st.wrongs = [];
+      st.idx = 0;
+      showSpeedReviewStart(root, st);
+      return;
+    }
+    // 보너스 라운드 — 5문제 완주 + 오답 복습까지 끝 + 아직 보너스 미제안
+    if (!st.bonusOffered && st.startCount === 5 && APP_STATE.total > 0) {
+      st.bonusOffered = true;
+      showBonusOffer(root, st);
+      return;
+    }
+    showSpeedEnd(root, st);
+    return;
+  }
+  const item = st.queue[st.idx];
+  const ans = item.op === '－' ? (item.a - item.b) : (item.a + item.b);
+  const total = st.queue.length;
+  const progress = (st.idx / total) * 100;
+  const digits = String(ans).length;
+  root.innerHTML = `
+    <div class="activity has-keypad" style="background:linear-gradient(180deg,#1A2438,#0A1024);color:#fff">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;background:rgba(255,255,255,.08);border-radius:14px;margin-bottom:10px">
+        <span style="font-family:var(--font-display);font-size:17px;color:#FFE066;font-weight:bold;white-space:nowrap">🚀 ${st.reviewing?'복습!':'차근차근 도전'} ${st.idx+1}/${total}</span>
+        <div style="flex:1;height:10px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${progress}%;background:linear-gradient(90deg,#FFE066,#FFC23C);border-radius:99px;transition:width .5s"></div>
+        </div>
+      </div>
+      <div class="instruction" id="instr-text" style="background:rgba(255,230,0,.95);color:#222">⚡ 시간 제한 없어요! 천천히 정확하게</div>
+      <div class="activity-canvas" style="gap:18px">
+        <div class="num-tile" style="background:linear-gradient(180deg,#FFE066,#FFC23C);color:#222">${item.a}</div>
+        <div style="font-family:var(--font-display);font-size:70px;color:#FFE066">${item.op||'＋'}</div>
+        <div class="num-tile" style="background:linear-gradient(180deg,#FFE066,#FFC23C);color:#222">${item.b}</div>
+        <div style="font-family:var(--font-display);font-size:70px;color:#FFE066">＝</div>
+        <div class="num-tile target empty input-active" id="answer-slot" style="background:rgba(255,255,255,.1);border-color:#FFE066;color:#FFE066"><span class="cursor-blink"></span></div>
+      </div>
+      <div class="tutorial-hint" style="color:#FFE066;background:rgba(0,0,0,.3)">👇 키패드로 답을 입력해요</div>
+      <div class="mascot-corner">${svgMoEum(100)}</div>
+      <div class="speech" style="background:#FFE066;color:#222">${st.reviewing?'한 번 더!':(st.idx===0?'시작!':st.idx===Math.floor(total/2)?'반 왔어!':'잘하고 있어!')}</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight(`${item.a} ${item.op==='－'?'빼기':'더하기'} ${item.b}`,document.getElementById('instr-text'));
+  setupSpeedKeypad(ans, item, st, digits);
+}
+
+function setupSpeedKeypad(ans, item, st, digits) {
+  // 기존 글로벌 키패드 시스템(.key, keyPress/keyDel/keyCheck) 호환
+  CURRENT_INPUT = '';
+  KEYPAD_LOCKED = false;
+  CURRENT_ANSWER_DIGITS = digits;
+  updateInputDisplay();
+  CURRENT_CHECK_FN = async (val) => {
+    if (KEYPAD_LOCKED) return;
+    KEYPAD_LOCKED = true;
+    const slot = document.getElementById('answer-slot');
+    const ok = val === ans;
+    if (slot) {
+      slot.classList.remove('empty', 'input-active');
+      slot.classList.add('filled');
+      slot.textContent = val;
+      slot.style.borderColor = ok ? '#5BB836' : '#FF6B6B';
+      slot.style.background = ok ? 'rgba(91,184,54,.3)' : 'rgba(255,107,107,.3)';
+      slot.style.color = ok ? '#5BB836' : '#FF6B6B';
+    }
+    st.answered = (st.answered || 0) + 1;
+    if (ok) {
+      st.correct++;
+      sfxCorrect();
+    } else {
+      st.wrongs.push(item);
+      sfxWrong();
+      setTimeout(() => {
+        if (slot) slot.textContent = ans;
+        const sp = document.querySelector('.activity .speech');
+        if (sp) { sp.textContent = `정답은 ${ans}${_numBatchim(ans)===0?'야':'이야'}!`; sp.style.background = '#FFC4C4'; }
+      }, 600);
+    }
+    APP_STATE.correct += ok ? 1 : 0;
+    APP_STATE.total++;
+    await sleep(ok ? 900 : 1700);
+    if (APP_STATE.currentScreen !== 'activity' || APP_STATE._speedState !== st) return;
+    st.idx++;
+    showScreen('activity');
+  };
+}
+
+function showSpeedSelect(root) {
+  root.innerHTML = `
+    <div class="activity" style="background:linear-gradient(180deg,#1A2438,#0A1024);color:#fff;align-items:center;justify-content:center;gap:20px;padding:30px">
+      <div style="font-family:var(--font-display);font-size:64px;color:#FFE066">🚀</div>
+      <div style="font-family:var(--font-display);font-size:34px;text-align:center;color:#fff">차근차근 도전!</div>
+      <div style="font-family:var(--font-display);font-size:17px;color:#FFC4C4;text-align:center;max-width:520px;line-height:1.6">
+        지금까지 배운 걸 연속으로 풀어 봐요!<br>
+        ⏱️ <span style="color:#FFE066">시간 제한은 없어요</span>. 천천히 정확하게 ✨
+      </div>
+      <div style="font-family:var(--font-display);font-size:22px;color:#FFE066;margin-top:10px">몇 문제 도전?</div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;justify-content:center">
+        <button onclick="window.startSpeed&&window.startSpeed(5)" style="background:#FFE066;color:#222;font-size:24px;padding:18px 32px;border-radius:18px;border:none;cursor:pointer;font-family:var(--font-display);box-shadow:0 6px 0 #B8A040;font-weight:bold">
+          5문제<br><span style="font-size:13px;font-weight:normal">금방 끝나요!</span>
+        </button>
+        <button onclick="window.startSpeed&&window.startSpeed(10)" style="background:#FFC23C;color:#222;font-size:24px;padding:18px 32px;border-radius:18px;border:none;cursor:pointer;font-family:var(--font-display);box-shadow:0 6px 0 #8B7000;font-weight:bold">
+          10문제<br><span style="font-size:13px;font-weight:normal">실력 뽐내기!</span>
+        </button>
+      </div>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech" style="background:#FFE066;color:#222">준비됐어?</div>
+    </div>
+  `;
+  if (APP_STATE.speakerOn) speak('차근차근 도전! 몇 문제 풀어 볼까?', {rate:1.0});
+}
+
+window.startSpeed = function(count) {
+  const items = generateSpeedProblems(count);
+  APP_STATE._speedState = {
+    queue: items, idx: 0, correct: 0, wrongs: [],
+    reviewing: false, startTime: Date.now(),
+    startCount: count, bonusOffered: false
+  };
+  showScreen('activity');
+};
+
+// 🎁 보너스 라운드 — 5문제 완주 후 +3 도전 옵션
+function showBonusOffer(root, st) {
+  root.innerHTML = `
+    <div class="activity" style="background:linear-gradient(180deg,#3A2A1A,#1A1410);color:#fff;align-items:center;justify-content:center;gap:20px;padding:30px">
+      <div style="font-family:var(--font-display);font-size:72px;animation:bounce 1s infinite alternate">🎁</div>
+      <div style="font-family:var(--font-display);font-size:34px;color:#FFE066;text-align:center">보너스 라운드!</div>
+      <div style="font-family:var(--font-display);font-size:18px;color:#FFC4C4;text-align:center;max-width:520px;line-height:1.6">
+        5문제 다 풀었어요! 👏<br>
+        <span style="color:#FFE066;font-size:22px">+3문제</span> 더 도전해볼까?
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px">
+        <button onclick="window.acceptBonus&&window.acceptBonus()" style="background:#FFE066;color:#222;font-size:22px;padding:16px 32px;border-radius:18px;border:none;cursor:pointer;font-family:var(--font-display);box-shadow:0 6px 0 #B8A040;font-weight:bold">
+          🚀 +3 도전!
+        </button>
+        <button onclick="window.skipBonus&&window.skipBonus()" style="background:#A8C0D8;color:#222;font-size:20px;padding:16px 28px;border-radius:18px;border:none;cursor:pointer;font-family:var(--font-display);box-shadow:0 6px 0 #6080A0">
+          이만 마칠게요
+        </button>
+      </div>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech" style="background:#FFE066;color:#222">자신 있으면 도전!</div>
+    </div>
+  `;
+  if (APP_STATE.speakerOn) speak('보너스 라운드. 세 문제 더 도전해볼까?', {rate:1.0});
+  sfxCheer();
+}
+
+window.acceptBonus = function() {
+  const st = APP_STATE._speedState;
+  if (!st) return;
+  const bonus = generateSpeedProblems(3);
+  st.queue = st.queue.concat(bonus);
+  st.bonusActive = true;
+  if (APP_STATE.speakerOn) speak('보너스 시작', {rate:1.0});
+  showScreen('activity');
+};
+
+window.skipBonus = function() {
+  const st = APP_STATE._speedState;
+  if (!st) return;
+  // 활동 영역 가져와서 결과 화면 그대로
+  const root = document.querySelector('#screen-activity') || document.querySelector('.activity').parentElement;
+  showSpeedEnd(root, st);
+};
+
+function showSpeedReviewStart(root, st) {
+  root.innerHTML = `
+    <div class="activity" style="background:linear-gradient(180deg,#3A1F38,#1A0A1A);color:#fff;align-items:center;justify-content:center;gap:20px;padding:30px">
+      <div style="font-family:var(--font-display);font-size:60px">🌱</div>
+      <div style="font-family:var(--font-display);font-size:34px;text-align:center;color:#FFC4E3">한 번 더!</div>
+      <div style="font-family:var(--font-display);font-size:17px;color:#FFC4C4;text-align:center;max-width:520px;line-height:1.6">
+        틀린 문제 <span style="color:#FFE066;font-size:30px;font-weight:bold">${st.queue.length}개</span>를<br>
+        다시 풀어 봐요! 완벽하게 익혀요 ✨
+      </div>
+      <button onclick="window.continueSpeed&&window.continueSpeed()" style="background:#FFE066;color:#222;font-size:24px;padding:16px 40px;border-radius:18px;border:none;cursor:pointer;font-family:var(--font-display);box-shadow:0 6px 0 #B8A040;margin-top:14px;font-weight:bold">
+        다시 시작 ▶
+      </button>
+      <div class="mascot-corner">${svgMoEum(110)}</div>
+      <div class="speech" style="background:#FFE066;color:#222">파이팅!</div>
+    </div>
+  `;
+  if (APP_STATE.speakerOn) speak(`틀린 ${st.queue.length}개 한 번 더 풀어보자`, {rate:1.0});
+}
+
+window.continueSpeed = function() { showScreen('activity'); };
+
+function showSpeedEnd(root, st) {
+  const total = st.answered || 0;
+  const correct = st.correct || 0;
+  const elapsed = Math.round((Date.now() - st.startTime) / 1000);
+  const min = Math.floor(elapsed / 60), sec = elapsed % 60;
+  const rate = total > 0 ? Math.round((correct / total) * 100) : 0;
+  let badge, msg, bgColor;
+  if (rate >= 95) { badge = '🌟 완벽한 별'; msg = '모든 문제를 정확히 풀었어요!'; bgColor='#FFE066'; }
+  else if (rate >= 80) { badge = '🎉 멋쟁이'; msg = '아주 잘 했어요!'; bgColor='#A8E0FF'; }
+  else if (rate >= 60) { badge = '💪 열심이'; msg = '꾸준히 해 봐요. 좋아지고 있어요!'; bgColor='#FFB1D2'; }
+  else { badge = '🌱 새싹 친구'; msg = '끝까지 도전한 게 멋졌어요!'; bgColor='#B0F0A0'; }
+  const wrongCount = total - correct;
+  root.innerHTML = `
+    <div class="activity" style="background:linear-gradient(180deg,#1A2438,#0A1024);color:#fff;align-items:center;gap:14px;padding:20px;overflow-y:auto">
+      <div style="font-family:var(--font-display);font-size:48px;color:#FFE066">🚀 완주!</div>
+      <div style="font-family:var(--font-display);font-size:36px;background:${bgColor};color:#222;padding:14px 32px;border-radius:18px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.3)">${badge}</div>
+      <div style="font-family:var(--font-display);font-size:18px;color:#FFC4C4;text-align:center;max-width:520px;line-height:1.5">${msg}</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+        <div style="background:rgba(255,255,255,.1);padding:14px 22px;border-radius:14px;text-align:center;min-width:120px">
+          <div style="font-size:12px;color:#FFC4C4">정답</div>
+          <div style="font-family:var(--font-display);font-size:28px;color:#FFE066">${correct} / ${total}</div>
+        </div>
+        ${wrongCount>0?`<div style="background:rgba(255,107,107,.15);padding:14px 22px;border-radius:14px;text-align:center;min-width:120px">
+          <div style="font-size:12px;color:#FFC4C4">아직 더 연습</div>
+          <div style="font-family:var(--font-display);font-size:28px;color:#FFB4B4">${wrongCount}개</div>
+        </div>`:''}
+        <div style="background:rgba(255,255,255,.1);padding:14px 22px;border-radius:14px;text-align:center;min-width:120px">
+          <div style="font-size:12px;color:#FFC4C4">소요 시간</div>
+          <div style="font-family:var(--font-display);font-size:28px;color:#FFE066">${min>0?min+'분 ':''}${sec}초</div>
+        </div>
+      </div>
+      <button onclick="window.finishSpeed&&window.finishSpeed()" style="background:#FFE066;color:#222;font-size:22px;padding:14px 40px;border-radius:18px;border:none;cursor:pointer;font-family:var(--font-display);margin-top:18px;box-shadow:0 6px 0 #B8A040;font-weight:bold">
+        다음으로 ▶
+      </button>
+      <div class="mascot-corner">${svgMoEum(100)}</div>
+      <div class="speech" style="background:${bgColor};color:#222">대단해요!</div>
+    </div>
+  `;
+  if (APP_STATE.speakerOn) speak(`완주! ${badge.replace(/[🌟🎉💪🌱]/g,'').trim()} 칭호를 받았어요`, {rate:.95});
+  sfxCheer();
+  launchConfetti(70);
+}
+
+window.finishSpeed = function() {
+  if (APP_STATE.currentScreen !== 'activity') return;
+  try { markCollected('speed-round'); } catch (e) {}
+  APP_STATE._speedState = null;
+  nextActivity();
+};
+
+function generateSpeedProblems(count){
+  const items = [];
+  count = count || 5;
+  if(typeof APP_PREFIX !== 'undefined'){
+    if(APP_PREFIX === 'app1'){
+      for(let i=0;i<count;i++){
+        const a=Math.floor(Math.random()*5)+1;
+        const b=Math.floor(Math.random()*5)+1;
+        items.push({a,b,op:'＋'});
+      }
+    } else if(APP_PREFIX === 'app2'){
+      const pairs=[[6,4],[7,3],[5,5],[8,2],[9,1],[4,6],[3,7],[2,8],[1,9]];
+      for(let i=0;i<count;i++){
+        const [a,b]=pairs[Math.floor(Math.random()*pairs.length)];
+        items.push({a,b,op:'＋'});
+      }
+    } else if(APP_PREFIX === 'app3'){
+      const types=[
+        ()=>{const a=Math.floor(Math.random()*4)+6;const b=Math.floor(Math.random()*(15-a))+(11-a);return {a,b,op:'＋'};},
+        ()=>{const total=Math.floor(Math.random()*7)+11;const b=Math.floor(Math.random()*6)+2;return {a:total,b,op:'－'};}
+      ];
+      for(let i=0;i<count;i++){
+        const t=types[Math.floor(Math.random()*types.length)];
+        items.push(t());
+      }
+    } else {
+      for(let i=0;i<count;i++){
+        const isAdd=Math.random()<0.5;
+        if(isAdd){
+          const a=Math.floor(Math.random()*40)+11;
+          const b=Math.floor(Math.random()*20)+5;
+          items.push({a,b,op:'＋'});
+        } else {
+          const total=Math.floor(Math.random()*60)+30;
+          const b=Math.floor(Math.random()*20)+5;
+          items.push({a:total,b,op:'－'});
+        }
+      }
+    }
+  }
+  return items;
+}
+
+function drawBranchMany(root,q,mode){
+  const target=q.target;
+  // 옵션 카드 — 짝꿍 보장
+  let opts=[];
+  if(target<=10){
+    // 작은 수: 1~(target-1) 전부 — 모든 짝꿍 표현 가능
+    for(let i=1;i<target;i++)opts.push(i);
+  } else if(target<=18){
+    // 11~18: target-9 ~ 9 — 이 범위 안에서 모든 짝꿍 가능
+    for(let i=Math.max(1,target-9); i<=Math.min(target-1,9); i++)opts.push(i);
+    // 만약 5장 미만이면 추가 노이즈
+    while(opts.length<5){const n=Math.floor(Math.random()*9)+1; if(opts.indexOf(n)<0)opts.push(n);}
+  } else {
+    // 19+: 짝꿍 한두 쌍 보장 + 노이즈
+    const pairs=[];
+    for(let i=Math.max(1,target-18); i<=Math.floor(target/2); i++){
+      const j=target-i; if(j>0 && j<=18 && i<=18) pairs.push([i,j]);
+    }
+    // 짝꿍이 비어있으면 가장 작은 한 쌍 사용
+    if(pairs.length===0){
+      const half=Math.floor(target/2); pairs.push([half, target-half]);
+    }
+    const candidate=new Set();
+    // 최소 2개 짝꿍 보장
+    const picked=shuffleArr(pairs).slice(0, Math.min(2,pairs.length));
+    picked.forEach(p=>{candidate.add(p[0]);candidate.add(p[1]);});
+    // 노이즈: 짝꿍 옆 수
+    picked.forEach(p=>{candidate.add(p[0]+1);candidate.add(p[1]-1);});
+    opts=[...candidate].filter(x=>x>0 && x<target).slice(0,8);
+    // 너무 적으면 추가
+    while(opts.length<6){const n=Math.floor(Math.random()*(target-1))+1; if(opts.indexOf(n)<0)opts.push(n);}
+  }
+  opts=shuffleArr(opts);
+  const isGather=mode==='gather';
+  const svg=isGather
+    ? `<svg class="tree-svg" viewBox="0 0 380 290" preserveAspectRatio="none"><path d="M60 100 L60 150 L320 150 L320 100" stroke="#FF6FA8" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M190 150 L190 220" stroke="#FF6FA8" stroke-width="6" fill="none" stroke-linecap="round"/><polygon points="190,250 175,225 205,225" fill="#FF6FA8"/></svg>`
+    : `<svg class="tree-svg" viewBox="0 0 380 290" preserveAspectRatio="none"><path d="M190 70 L190 130 L60 130 L60 170" stroke="#FF6FA8" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M190 130 L320 130 L320 170" stroke="#FF6FA8" stroke-width="6" fill="none" stroke-linecap="round"/><polygon points="60,200 45,175 75,175" fill="#FF6FA8"/><polygon points="320,200 305,175 335,175" fill="#FF6FA8"/></svg>`;
+  const slotsRow=`<div class="row" ${!isGather?'style="margin-top:30px"':''}><div class="slot empty">?</div><div class="slot empty">?</div></div>`;
+  const targetRow=`<div class="row" ${isGather?'style="margin-top:30px"':''}><div class="anchor"${!isGather?' style="background:linear-gradient(180deg,#FFB1D2,#FF6FA8);color:#fff;border-color:#C73874"':''}>${target}</div></div>`;
+  const treeRows=isGather?(slotsRow+targetRow):(targetRow+slotsRow);
+  root.innerHTML=`
+    <div class="activity">
+      <div class="instruction" id="instr-text">${isGather?`👉 두 수를 모아 <span class="t-num">${target}</span> 만들기`:`👉 <span class="t-num">${target}</span>${josaReul(target)} 두 수로 갈라요`}</div>
+      <div class="activity-canvas" style="gap:60px">
+        <div class="branch-tree">${svg}${treeRows}</div>
+        <div class="option-panel">${opts.map(o=>`<div class="opt-card" data-val="${o}">${o}</div>`).join('')}</div>
+      </div>
+      <div class="tutorial-hint">👆 카드 → 빈칸 순서로 눌러요</div>
+      <div class="mascot-corner">${isGather?svgMoEum(110):svgNaNum(110)}</div>
+      <div class="speech">${isGather?`카드 두 장으로 <span class="t-num">${target}</span> 만들기!`:`<span class="t-num">${target}</span>${josaUn(target)} 어떤 두 수로?`}</div>
+    </div>`;
+  speakWithHighlight(isGather?`두 카드를 골라 ${target} 만들기`:`${target}${josaReul(target)} 두 수로 가르기`,document.getElementById('instr-text'));
+  setTimeout(()=>{if(APP_STATE.speakerOn&&root.isConnected)speak(isGather?`카드 두 장을 골라서 빈칸에 넣어. 모으면 ${target}${josaIGa(target)} 되어야 해.`:`${target}${josaReul(target)} 어떤 두 수로 갈라 볼까? 카드 두 장을 골라 봐.`,{rate:1.0,mode:'queue'});},1700);
+  bindBranchTree(root,target,isGather);
+}
+
+function bindBranchTree(root,target,isGather){
+  let selOpt=null,selSlot=null,isPlacing=false;
+  function clearOpt(){if(selOpt)selOpt.classList.remove('active');selOpt=null;}
+  function clearSlot(){if(selSlot)selSlot.classList.remove('active');selSlot=null;}
+  async function tryPlace(){
+    if(!selOpt||!selSlot||isPlacing)return;
+    const val=+selOpt.dataset.val;
+    isPlacing=true;
+    const card=selOpt,slot=selSlot;
+    selOpt=null;selSlot=null;
+    await flyCardToSlot(card,slot,val);
+    isPlacing=false;
+    const filledSlots=[...root.querySelectorAll('.slot.filled')];
+    const sp=root.querySelector('.speech');
+    if(filledSlots.length===1){
+      // 첫 카드 — 짝꿍 힌트
+      const needed=target-val;
+      if(needed<=0){
+        if(sp)sp.textContent=`${val}만으로는 ${target} 만들기 어려워. 더 작은 수로!`;
+        recordWrong();
+        await sleep(1200);
+        slot.classList.remove('filled');slot.classList.add('empty');slot.textContent='?';
+        return;
+      }
+      if(sp)sp.textContent=`좋아! 짝꿍은 ${needed}${_numBatchim(needed)===0?'야':'이야'}. 이제 ${needed}${josaReul(needed)} 골라 봐!`;
+      playTone(660,0.14,'sine',0.3);
+      if(APP_STATE.speakerOn)speak(`짝꿍은 ${needed}`,{rate:1.1});
+      // 짝꿍 카드 잠깐 반짝
+      const hintCard=[...root.querySelectorAll('.opt-card')].find(c=>+c.dataset.val===needed);
+      if(hintCard){
+        hintCard.style.transition='box-shadow .3s, transform .3s';
+        hintCard.style.boxShadow='0 0 24px rgba(255,230,0,.95)';
+        hintCard.style.transform='translateY(-4px) scale(1.05)';
+        setTimeout(()=>{hintCard.style.boxShadow='';hintCard.style.transform='';},1800);
+      }
+    } else if(filledSlots.length>=2){
+      // 두 카드 — 합 검증
+      const vals=filledSlots.map(s=>+s.textContent);
+      const sum=vals[0]+vals[1];
+      if(sum===target){
+        sfxCorrect();
+        await sleep(400);
+        await showBranchCount(target,vals[0],vals[1],isGather);
+        recordCorrect();
+        setTimeout(()=>{showFeedback(true);setTimeout(nextActivity,800);},200);
+      }else{
+        recordWrong();
+        if(sp)sp.textContent=`${vals[0]}${josaIrang(vals[0])} ${vals[1]}${josaReul(vals[1])} 모으면 ${sum}${josaIGa(sum)} 돼. ${target}${josaIGa(target)} 되도록 다시!`;
+        if(APP_STATE.speakerOn)speak(`다시 골라 봐`,{rate:1.1});
+        // 슬롯 흔들렸다가 부드럽게 비움
+        filledSlots.forEach(s=>s.classList.add('shake'));
+        await sleep(700);
+        filledSlots.forEach(s=>{
+          s.style.transition='opacity .35s, transform .35s';
+          s.style.opacity='0';s.style.transform='scale(.4)';
+        });
+        await sleep(380);
+        filledSlots.forEach(s=>{
+          s.classList.remove('filled','shake');s.classList.add('empty');
+          s.textContent='?';s.style.opacity='';s.style.transform='';
+        });
+      }
+    }
+  }
+  root.querySelectorAll('.opt-card').forEach(card=>{
+    card.addEventListener('click',()=>{if(isPlacing)return;clearOpt();selOpt=card;card.classList.add('active');tryPlace();});
+  });
+  // 모든 슬롯에 항상 클릭 이벤트 (empty/filled 체크는 안에서)
+  root.querySelectorAll('.slot').forEach(slot=>{
+    slot.addEventListener('click',()=>{
+      if(isPlacing||slot.classList.contains('filled'))return;
+      clearSlot();selSlot=slot;slot.classList.add('active');tryPlace();
+    });
+  });
+}
+
+function drawSplitEqual(root,q){
+  const total=q.target;const answer=total/2;
+  if(!Number.isInteger(answer)){nextActivity();return;}
+  const svgFn=OBJECT_SVG[q.kind]||OBJECT_SVG[q.meta]||OBJECT_SVG.bear;  // 시트에서는 그림 이름이 메모 칸에 들어 있음
+  root.innerHTML=`
+    <div class="activity has-keypad">
+      <div class="instruction" id="instr-text">👉 <span class="t-num">${total}</span>${josaReul(total)} <span class="t-rel">똑같이</span> 두 묶음으로</div>
+      <div class="activity-canvas" style="flex-direction:column;gap:8px">
+        <div class="objects-box" style="border-color:var(--split-deep);min-width:280px;padding:14px">${objsRow(OBJECT_SVG.ball,answer,'#E84545')}${objsRow(OBJECT_SVG.ball,answer,'#3A8DDE')}</div>
+        <div style="font-family:var(--font-display);font-size:28px;color:var(--split-deep)">⬇️</div>
+        <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:center">
+          <div class="objects-box" style="border-color:var(--split-deep);min-width:130px;min-height:80px;padding:10px" id="left-plate"></div>
+          <div style="font-family:var(--font-display);font-size:36px;color:var(--split-deep)">+</div>
+          <div class="objects-box" style="border-color:var(--split-deep);min-width:130px;min-height:80px;padding:10px" id="right-plate"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:6px">
+          <div style="font-family:var(--font-display);font-size:24px;color:#666">한 쪽 개수:</div>
+          <div class="num-tile target empty input-active" id="answer-slot" style="width:90px;height:80px;font-size:48px"><span class="cursor-blink"></span></div>
+        </div>
+      </div>
+      <div class="tutorial-hint">👇 키패드로 한 쪽 개수 입력</div>
+      <div class="mascot-corner">${svgNaNum(110)}</div>
+      <div class="speech">빨강·파랑 반반씩!</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight(`${total}${josaReul(total)} 똑같이 나눠요`,document.getElementById('instr-text'));
+  setupKeypadCheck(answer,()=>motionSplitObjects(root,OBJECT_SVG.ball,answer));
+}
+
+function drawSplitCard(root,q){
+  const total=q.target,a=q.a,ans=total-a;
+  // 모형 시각화 — total이 30 이하일 때
+  const showVis = total<=30;
+  let visBlock='';
+  if(showVis){
+    const tenBar = `<div style="display:grid;grid-template-columns:repeat(2,8px);grid-template-rows:repeat(5,8px);gap:1px;background:var(--split-deep);padding:2px;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.2)"><div style="grid-column:1/3;height:0"></div>${Array(10).fill('<div style="background:#FFB1D2;border-radius:1px"></div>').join('')}</div>`;
+    const oneCube = (color)=>`<div style="width:18px;height:18px;background:radial-gradient(circle at 35% 35%,#fff 6%,${color} 60%);border:2px solid var(--split-deep);border-radius:50%;box-shadow:0 1px 2px rgba(0,0,0,.2)"></div>`;
+    const dashedCube = `<div style="width:18px;height:18px;background:#EAF4FF;border:2px dashed #3A8DDE;border-radius:50%"></div>`;
+    const renderObjs=(n,dashed=false)=>{
+      if(n===0)return '';
+      const t=Math.floor(n/10), o=n%10;
+      return `<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;max-width:240px">
+        ${t>0?`<div style="display:flex;gap:3px">${Array(t).fill(tenBar).join('')}</div>`:''}
+        ${o>0?`<div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;max-width:160px">${Array.from({length:o},()=>dashed?dashedCube:oneCube('#E84545')).join('')}</div>`:''}
+      </div>`;
+    };
+    visBlock=`<div style="display:flex;align-items:center;gap:18px;padding:14px 22px;background:rgba(255,255,255,.85);border:3px dashed var(--split-deep);border-radius:18px;margin:6px 0 4px;flex-wrap:wrap;justify-content:center;max-width:600px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        ${renderObjs(a)}
+        <div style="font-family:var(--font-display);font-size:18px;color:var(--split-deep)">${a}개</div>
+      </div>
+      <div style="font-family:var(--font-display);font-size:28px;color:#888">|</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        ${renderObjs(ans,true)}
+        <div style="font-family:var(--font-display);font-size:18px;color:#888">? 개</div>
+      </div>
+    </div>`;
+  }
+  root.innerHTML=`
+    <div class="activity has-keypad">
+      <div class="instruction" id="instr-text">👉 <span class="t-num">${total}</span> <span class="t-op">=</span> <span class="t-num">${a}</span> <span class="t-op">+</span> <span class="t-rel">?</span></div>
+      ${visBlock}
+      <div class="activity-canvas" style="gap:18px">
+        <div class="num-tile target">${total}</div>
+        <div style="font-family:var(--font-display);font-size:60px;color:var(--split-deep)">⇒</div>
+        <div class="num-tile">${a}</div>
+        <div style="font-family:var(--font-display);font-size:48px;color:var(--split-deep)">${josaWa(a)}</div>
+        <div class="num-tile target empty input-active" id="answer-slot"><span class="cursor-blink"></span></div>
+      </div>
+      <div class="tutorial-hint">👇 빈칸의 수를 입력해요</div>
+      <div class="mascot-corner">${svgNaNum(110)}</div>
+      <div class="speech">${a} 더하기 얼마면 ${total}?</div>
+    </div>
+    ${renderKeypad()}
+  `;
+  speakWithHighlight(`${total}${josaUn(total)} ${a}${josaWa(a)} 무엇`,document.getElementById('instr-text'));
+  setupKeypadCheck(ans,()=>motionSplitCard(root,total,a,ans));
+}
+
+// ============================================
+// 🏆 13. 수료증 + 대시보드 (사전·사후 비교)
+// ============================================
+function renderCert(root){
+  launchConfetti(60);sfxCheer();
+  const st=APP_STATE.postRecord.stickers.join(' ');
+  root.innerHTML=`
+    <div class="cert-wrap">
+      <div class="cert-card">
+        <h1>🌟 모으기와 가르기 수료증 🌟</h1>
+        <div style="text-align:center"><div class="cert-name">${APP_STATE.learnerClass?APP_STATE.learnerClass+' ':''}${APP_STATE.learnerName}</div></div>
+        <div class="cert-compare">
+          <div class="cert-box pre">
+            <h3>💡 활동 전 — 내가 아는 모으기·가르기</h3>
+            <p>${APP_STATE.preRecord.text||'(녹음하지 않았어요)'}</p>
+          </div>
+          <div class="cert-box post">
+            <h3>🌟 활동 후 — 새롭게 알게 된 점</h3>
+            <p>${APP_STATE.postRecord.text||'(녹음하지 않았어요)'}</p>
+          </div>
+        </div>
+        <div class="dashboard">
+          <div class="dash-card"><div class="num">${APP_STATE.correct}/${APP_STATE.total}</div><div class="label">📚 정답 / 도전</div></div>
+          <div class="dash-card"><div class="num">${'★'.repeat(APP_STATE.postRecord.stars)}${'☆'.repeat(5-APP_STATE.postRecord.stars)}</div><div class="label">⭐ 자기평가</div></div>
+          <div class="dash-card"><div class="num">${st||'—'}</div><div class="label">🎁 스티커</div></div>
+          <div class="dash-card"><div class="num">${APP_STATE.maxCombo||0}</div><div class="label">🔥 최고 연속 정답</div></div>
+        </div>
+        <div class="cert-collection">
+          <h3 style="text-align:center;font-family:var(--font-display);font-size:22px;color:#444;margin:14px 0 10px">🎨 오늘의 도감</h3>
+          <div class="collection-grid">${renderCollection()}</div>
+        </div>
+        <div style="text-align:center;font-family:var(--font-display);font-size:22px;color:#666;margin-top:14px">${getFinalMessage()}</div>
+      </div>
+      <div class="cert-buttons">
+        <button class="big-btn" onclick="downloadCert()">📥 수료증 저장</button>
+        <button class="big-btn green" onclick="goHome()">🔄 처음부터 다시</button>
+      </div>
+      <div class="mascot-corner"><div class="mascot-with-cap">${svgMoEum(130)}<svg class="grad-cap-svg" viewBox="-40 -22 80 30"><polygon points="-32,-2 32,-2 28,-10 -28,-10" fill="#2A2A4A" stroke="#1A1A30" stroke-width="1"/><rect x="-34" y="-2" width="68" height="5" fill="#2A2A4A" rx="1"/><line x1="18" y1="-4" x2="34" y2="-18" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"/><circle cx="34" cy="-18" r="5" fill="#FFD700" stroke="#D4A800" stroke-width="1.5"/></svg></div></div>
+      <div class="mascot-corner right"><div class="mascot-with-cap">${svgNaNum(130)}<svg class="ribbon-svg" viewBox="-30 -8 60 16"><path d="M -22 0 Q -10 -7 0 0 Q 10 -7 22 0 Q 10 7 0 0 Q -10 7 -22 0 Z" fill="#FF6FA8" stroke="#C73874" stroke-width="1.5"/><circle cx="0" cy="0" r="3" fill="#FFD700"/></svg></div></div>
+      <div class="speech">정말 잘했어! 🎉</div>
+    </div>`;
+  speak('모으기와 가르기 수료증을 받았어요. 정말 잘했어요!',{mode:'protect'});
+}
+function renderCollection(){
+  // 이 앱에서 사용된 카테고리 추출
+  const usedCats=[...new Set(APP_STATE.questions.map(q=>STAGE_CATEGORY[q.stage]).filter(Boolean))];
+  const collected=new Set(APP_STATE.collected||[]);
+  return usedCats.map(cat=>{
+    const info=CATEGORY_INFO[cat];
+    const done=collected.has(cat);
+    return `<div class="coll-item ${done?'on':''}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:14px;background:${done?'linear-gradient(180deg,#FFE066,#FFC23C)':'#F0F0F0'};border:3px solid ${done?'#E8B100':'#D0D0D0'};opacity:${done?'1':'.4'};transition:all .3s">
+      <div style="font-size:34px;filter:${done?'none':'grayscale(1)'}">${info.icon}</div>
+      <div style="font-family:var(--font-display);font-size:13px;color:${done?'#5A3A00':'#999'};font-weight:bold">${info.label}</div>
+    </div>`;
+  }).join('');
+}
+function getFinalMessage(){
+  const c=APP_STATE.correct,t=APP_STATE.total;
+  if(t===0)return '💛 도전한 용기가 멋져요. 다음에 또 함께해요';
+  if(c>=t*0.8)return '👑 환상적이에요! 모으기·가르기를 잘 이해했어요';
+  if(c>=t*0.5)return '🌈 잘 자라고 있어요! 더 도전해 봐요';
+  return '💛 도전한 용기가 멋졌어요. 한 번 더 같이 해 봐요';
+}
+async function downloadCert(){
+  try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
+  const W=1200,H=1600;
+  const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#FFFEF0');g.addColorStop(1,'#FFF6D6');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#FFC23C';ctx.lineWidth=18;ctx.strokeRect(36,36,W-72,H-72);
+  ctx.strokeStyle='#FFE08A';ctx.lineWidth=4;ctx.strokeRect(62,62,W-124,H-124);
+  ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  const F=(size,fam)=>`bold ${size}px ${fam==='d'?'Jua':'"Nanum Gothic"'}, sans-serif`;
+  // 줄 바꿔 쓰기
+  function wrap(text,x,y,maxW,lineH,maxLines){
+    const chars=[...String(text||'')];let line='',lines=[];
+    chars.forEach(ch=>{ if(ctx.measureText(line+ch).width>maxW&&line){lines.push(line);line=ch;} else line+=ch; });
+    if(line)lines.push(line);
+    if(lines.length>maxLines){lines=lines.slice(0,maxLines);lines[maxLines-1]=lines[maxLines-1].slice(0,-1)+'…';}
+    lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineH));
+    return lines.length;
+  }
+  function box(x,y,w,h,fill,stroke){
+    ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,22);else ctx.rect(x,y,w,h);
+    ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=4;ctx.strokeStyle=stroke;ctx.stroke();
+  }
+  ctx.fillStyle='#6B4A00';ctx.font=F(68,'d');
+  ctx.fillText('🌟 모으기와 가르기 수료증 🌟',W/2,180);
+  ctx.fillStyle='#2F7A12';ctx.font=F(56,'d');
+  const who=(APP_STATE.learnerClass?APP_STATE.learnerClass+' ':'')+(APP_STATE.learnerName||'');
+  ctx.fillText(who,W/2,290);
+  ctx.fillStyle='#333';ctx.font=F(30,'b');
+  ctx.fillText('모음이와 나눔이의 모험을 끝까지 해냈어요!',W/2,360);
+  // 활동 전·후 생각
+  const pre=APP_STATE.preRecord.text||'(녹음하지 않았어요)';
+  const post=APP_STATE.postRecord.text||'(녹음하지 않았어요)';
+  box(110,420,W-220,230,'#FFF8E6','#FFC23C');
+  ctx.fillStyle='#8A6200';ctx.font=F(28,'d');ctx.fillText('💡 활동 전, 내가 아는 모으기와 가르기',W/2,475);
+  ctx.fillStyle='#333';ctx.font=F(28,'b');wrap(pre,W/2,530,W-300,42,3);
+  box(110,690,W-220,230,'#EEF8E8','#5BB836');
+  ctx.fillStyle='#2F7A12';ctx.font=F(28,'d');ctx.fillText('🌟 활동 후, 새롭게 알게 된 점',W/2,745);
+  ctx.fillStyle='#333';ctx.font=F(28,'b');wrap(post,W/2,800,W-300,42,3);
+  // 숫자 카드
+  const cards=[
+    [`${APP_STATE.correct}/${APP_STATE.total}`,'📚 정답 / 도전'],
+    ['★'.repeat(APP_STATE.postRecord.stars||0)+'☆'.repeat(5-(APP_STATE.postRecord.stars||0)),'⭐ 자기평가'],
+    [(APP_STATE.postRecord.stickers||[]).join('')||'—','🎁 스티커'],
+    [String(APP_STATE.maxCombo||0),'🔥 최고 연속 정답']
+  ];
+  const cw=230,gap=20,startX=(W-(cw*4+gap*3))/2;
+  cards.forEach((c,i)=>{
+    const x=startX+i*(cw+gap);box(x,960,cw,150,'#FFFFFF','#E5E7EB');
+    ctx.fillStyle='#222';ctx.font=F(c[0].length>8?26:40,'d');ctx.fillText(c[0],x+cw/2,1035);
+    ctx.fillStyle='#666';ctx.font=F(20,'b');ctx.fillText(c[1],x+cw/2,1085);
+  });
+  // 오늘의 도감
+  ctx.fillStyle='#444';ctx.font=F(34,'d');ctx.fillText('🎨 오늘의 도감',W/2,1180);
+  const usedCats=[...new Set(APP_STATE.questions.map(q=>STAGE_CATEGORY[q.stage]).filter(Boolean))];
+  const got=new Set(APP_STATE.collected||[]);
+  const per=Math.min(usedCats.length,6),iw=150,ig=16;
+  usedCats.forEach((cat,i)=>{
+    const row=Math.floor(i/per),col=i%per;
+    const inRow=Math.min(per,usedCats.length-row*per);
+    const x=(W-(iw*inRow+ig*(inRow-1)))/2+col*(iw+ig),y=1210+row*130;
+    const on=got.has(cat),info=CATEGORY_INFO[cat]||{icon:'❔',label:cat};
+    box(x,y,iw,115,on?'#FFE066':'#F0F0F0',on?'#E8B100':'#D0D0D0');
+    ctx.globalAlpha=on?1:.4;
+    ctx.font='44px sans-serif';ctx.fillStyle='#222';ctx.fillText(info.icon,x+iw/2,y+58);
+    ctx.font=F(20,'b');ctx.fillText(info.label,x+iw/2,y+96);
+    ctx.globalAlpha=1;
+  });
+  ctx.fillStyle='#888';ctx.font=F(24,'b');
+  ctx.fillText(new Date().toLocaleDateString('ko-KR'),W/2,H-100);
+  const link=document.createElement('a');
+  link.download=`모으기와_가르기_수료증_${APP_STATE.learnerName||'학생'}.png`;
+  link.href=canvas.toDataURL('image/png');
+  document.body.appendChild(link);link.click();link.remove();
+}
+</script>
+</body>
+</html>
